@@ -1,0 +1,574 @@
+#%% # noqa
+import datetime
+from copy import deepcopy
+from typing import Any, Dict, Optional
+
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+from src.base import Case
+from src.evaluation import average_opt_results
+from src.experiment_manager.cache import EXPERIMENT_FOLDER, load_cache
+
+# matplotlib.pyplot.ion()
+
+sns.set_theme()
+sns.set(font_scale=1.5)
+
+
+def _set_font_size(ax: Any, misc: int = 26, legend: int = 14) -> None:
+    try:
+        _ = len(ax)
+    except TypeError:
+        ax = [ax]
+    for _ax in ax:
+        for item in (
+            [_ax.title, _ax.xaxis.label, _ax.yaxis.label]
+            + _ax.get_xticklabels()
+            + _ax.get_yticklabels()
+        ):
+            item.set_fontsize(misc)
+    for _ax in ax:
+        for item in _ax.get_legend().get_texts():
+            item.set_fontsize(legend)
+
+
+def plot_results(params: Dict[str, Any], result: Optional[Any] = None) -> None:
+    if result is None:
+        cache = load_cache()
+        try:
+            information = cache[params.__repr__()][0]
+        except FileNotFoundError:
+            print("File not found.")
+            raise Exception("File not found.")
+    else:
+        information = result[0]
+
+    # plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
+
+    # Plot results
+    if Case.SPOT not in params:
+        fig, ax = plt.subplots(4, 1, figsize=(11, 16))
+        ax = ax.ravel()
+        x = np.array(list(range(24)))
+        y = information.p_base - information.p_up_reserve
+        # mask = pt >= p_base
+        # y[mask] = p_base[mask]
+        # y2 = p_base + activation
+        # y2[mask] = p_base[mask]
+        ax[0].step(x, information.p_base, color="black", where="post")
+        ax[0].step(x, y, color="black", linestyle="--", where="post")
+        # ax[0].step(x, p_base2, color="green", linestyle="-.")
+        # ax[0].step(x, p_base + activation, color="blue", linestyle=":").
+        # ax[0].set_xlabel("Hour of day")
+        ax[0].set_ylabel("Power [kW]")
+        # ax[0].set_title(title)
+        # ax[0].fill_between(x, p_base, y, step="pre", alpha=0.2, color="red")
+        # ax[0].fill_between(x, p_base, y2, step="pre", alpha=0.2, color="blue")
+        ax[0].legend([r"$P^{B}_{h}$", r"$p^{r,\uparrow}_{h}$"], loc="upper right")
+        # ax[0].set_xlabel("Time [h]")
+
+        # Temperature dynamics
+        w = -1
+        # _w = information.lambda_rp.shape[0]
+        x2 = np.array(list(range(96))) / 4
+        # ax[1].set_title("Scenario {}".format(w))
+        ax[1].plot(x2, information.t_c[w, :], label=r"$T^{c}_{17,t}$")
+        ax[1].plot(x2, information.t_f[w, :], label=r"$T^{f}_{17,t}$")
+        ax[1].plot(x2, information.t_c_base, label=r"$T^{c}_{t}$", alpha=0.5)
+        ax[1].plot(x2, information.t_f_base, label=r"$T^{f}_{t}$", alpha=0.5)
+        ax[1].plot(
+            x2, information.t_c_data, label="Measurements", color="black", linestyle=":"
+        )
+        # ax[1].plot(x2, t_f[w, :], label="TcFood")
+        ax[1].set_ylabel(r"Temperature [$^\circ$C]")
+        ax[1].legend(loc="upper right")
+        # ax[1].set_xlabel("Time [h]")
+
+        # power dynamics
+        _pt = information.pt[w, :]
+
+        ax[2].step(
+            x, information.p_base, label=r"$P^{B}_{h}$", color="black", where="post"
+        )
+        ax[2].step(
+            x, _pt, label=r"$p_{17,h}$", color="black", linestyle="--", where="post"
+        )
+        # ax[2].set_xlabel("Time [h]")
+        ax[2].set_ylabel("Power [kW]")
+        # ax[2].set_title("Scenario {}".format(w))
+        ax[2].legend(loc="upper left")
+
+        ax[3].step(
+            x,
+            information.lambda_spot[w, :],
+            label=r"$\lambda_{h}^{s}$",
+            color="red",
+            where="post",
+        )
+
+        ax[3].step(
+            x,
+            information.lambda_rp[w, :],
+            label=r"$\lambda_{17,h}^{b}$",
+            color="blue",
+            where="post",
+        )
+        ax[3].step(
+            x,
+            information.lambda_spot[w, :] + information.lambda_b[w, :],
+            label=r"$\lambda_{h}^{bid}$",
+            color="orange",
+            where="post",
+        )
+        ax[3].legend(loc="best")
+        ax[3].set_ylabel("Price [DKK/kWh]")
+        ax[3].set_xlabel("Time [h]")
+        # plt.rcParams.update({"font.size": 20})
+        _set_font_size(ax)
+
+    else:
+        fig, ax = plt.subplots(3, 1, sharex=True, figsize=(11, 13))
+        ax = ax.ravel()
+        x = np.array(list(range(24)))
+        y = information.p_base - information.p_up_reserve
+
+        # Temperature dynamics
+        w = -1
+        x2 = np.array(list(range(96))) / 4
+        # ax[1].set_title("Scenario {}".format(w))
+        ax[1].plot(x2, information.t_c[w, :], label=r"$T^{c}_{t}$")
+        ax[1].plot(x2, information.t_f[w, :], label=r"$T^{f}_{t}$")
+        # ax[1].plot(x2, information.t_c_base, label=r"$T^{c}_{t}$", alpha=0.5)
+        # ax[1].plot(x2, information.t_f_base, label=r"$T^{f}_{t}$", alpha=0.5)
+        ax[1].plot(
+            x2, information.t_c_data, label="Measurements", color="black", linestyle=":"
+        )
+        ax[1].set_ylabel(r"Temperature [$^\circ$C]")
+        ax[1].legend(loc="upper right")
+        # ax[1].set_xlabel("Time [h]")
+
+        # power dynamics
+        _pt = information.pt[w, :]
+
+        ax[0].step(
+            x, information.p_base, label=r"$P^{B}_{h}$", color="black", where="post"
+        )
+        ax[0].step(
+            x, _pt, label=r"$p_{h}$", color="black", linestyle="--", where="post"
+        )
+        # ax[0].set_xlabel("Time [h]")
+        ax[0].set_ylabel("Power [kW]")
+        ax[0].legend(loc="upper left")
+
+        ax[2].step(
+            x,
+            information.lambda_spot[w, :],
+            label=r"$\lambda_{h}^{s}$",
+            color="red",
+            where="post",
+        )
+        ax[2].legend(loc="best")
+        ax[2].set_ylabel("Price [DKK/kWh]")
+        ax[2].set_xlabel("Time [h]")
+
+        # plt.rcParams.update({"font.size": 14})
+        _set_font_size(ax)
+
+    # NOTE: if w=-1, we are looking at the worst case scenario!
+    # join all keys in dict to string with "_"
+    keys = [
+        "analysis",
+        "case",
+        "run_oos",
+        "year",
+        "delta_max",
+        "one_lambda",
+        "nb_scenarios_spot",
+    ]
+    name = "__".join([str(k) + "_" + str(v) for k, v in params.items() if k in keys])
+    filename = f"{name}.png"
+    plt.savefig(f"{EXPERIMENT_FOLDER}/figures/{filename}", dpi=300)
+
+    plt.show()
+
+
+def plot_analysis2() -> None:
+    ### TABLE: ... ###
+    cache = load_cache()
+    res = []
+    delta = []
+    res2 = []
+    delta2 = []
+
+    for _params, result in cache.items():
+        params = eval(_params)
+        assert len(result) == 2, "We expect two results"
+        instance_information = result[0]
+        opt_result = result[1]
+
+        delta.append(params["delta_max"])
+        delta2.append(params["delta_max"])
+        res.append(opt_result)
+        res2.append(instance_information)
+
+    assert len(res) == len(delta)
+    # assert len(res2) == len(delta2)
+
+    fig, ax = plt.subplots(2, 1, sharex=True, figsize=(11, 8))
+    ax = ax.ravel()
+    ix = np.argsort(delta)
+    x = np.array(delta)[ix]
+    reserve_payment = np.array([e.reserve_payment for e in res])[ix]
+    activation_payment = np.array([e.act_payment for e in res])[ix]
+    penalty_cost = np.array([e.penalty_cost for e in res])[ix]
+    total_cost = np.array([e.total_cost for e in res])[ix]
+    base_cost_today = np.array([e.base_cost_today for e in res])[ix]
+    ax[0].plot(
+        x, base_cost_today, label="Base cost", color="black", linewidth=2, alpha=0.8
+    )
+    ax[0].plot(
+        x,
+        reserve_payment,
+        label="Reserve payment",
+        linestyle="--",
+    )
+    ax[0].plot(
+        x,
+        activation_payment,
+        label="Activation payment",
+        linestyle="--",
+    )
+    ax[0].plot(
+        x,
+        penalty_cost,
+        label="Penalty cost",
+        linestyle="--",
+    )
+    ax[0].plot(
+        x, total_cost, label="Total cost", linewidth=2, color="black", linestyle="--"
+    )
+    ax[0].set_ylabel("Cost [DKK]")
+    # ax[0].set_xlabel(r"$\Delta_{max}$ [$^\circ$C]")
+    ax[0].legend(loc="best")
+
+    x = list(range(24))
+    ax[0].set_xlabel(r"$\Delta_{max}$ [$^\circ$C]")
+    ax[1].set_ylabel("Price [DKK/kWh]")
+
+    data = [r.lambda_b.reshape(-1) for r in res2]
+    # for _delta, r in zip(delta2, res2):
+    # prepare boxplot of lambda_b
+    _ = ax[1].boxplot(data, positions=delta2)
+
+    # _set_font_size(ax)
+
+    plt.savefig(f"{EXPERIMENT_FOLDER}/figures/analysis2_plots.png", dpi=300)
+    plt.show()
+
+
+def admm_vs_normal_solution() -> None:
+    cache = load_cache()
+
+    def verify(params: Dict[str, Any]) -> bool:
+        return (
+            params["run_oos"] is False
+            and Case.mFRR_AND_ENERGY.name in params["case"]
+            and params["analysis"] == "analysis1"
+            and params["year"] == 2021
+            and params["one_lambda"] is False
+            and params["nb_scenarios_spot"] in [5, 10]
+        )
+
+    all_params = [deepcopy(p) for p in Case.cases() if verify(p)]
+
+    assert len(all_params) == 4, "We expect 4 results"
+
+    try:
+        info_res = [
+            {
+                "admm": p["admm"],
+                "nb": p["nb_scenarios_spot"],
+                "info": cache[p.__repr__()][0],
+                "result": cache[p.__repr__()][1],
+            }
+            for p in all_params
+        ]
+    except FileNotFoundError:
+        print("File not found.")
+        raise Exception("File not found.")
+
+    nb = 5
+    admm = [e for e in info_res if e["admm"] and e["nb"] == nb][0]
+    normal = [e for e in info_res if (not e["admm"] and e["nb"] == nb)][0]
+
+    # print objective value for each of them
+    print(f"Base cost: {admm['result'].base_cost_today}")
+    print(f"ADMM results: {admm['result']}")
+    print(f"Normal results: {normal['result']}")
+
+    # print p_up_reserve for admm
+    p_up_reserve_admm = admm["info"].p_up_reserve.round(2)
+    p_up_reserve_normal = normal["info"].p_up_reserve.round(2)
+    print(f"ADMM ({nb}): {p_up_reserve_admm}")
+    print(f"Normal ({nb}): {p_up_reserve_normal}")
+
+    # print penalty for admm
+    # penalty_cost_admm = admm["info"].slack.round(2)
+    # penalty_cost_normal = normal["info"].slack.round(2)
+    # print(f"ADMM ({nb}): {penalty_cost_admm}")
+    # print(f"Normal ({nb}): {penalty_cost_normal}")
+
+    # print lambda alpha
+    lambda_alpha_admm = admm["info"].alpha
+    lambda_alpha_normal = normal["info"].alpha
+    print(f"ADMM ({nb}): {lambda_alpha_admm}")
+    print(f"Normal ({nb}): {lambda_alpha_normal}")
+
+    # print lambda beta
+    lambda_beta_admm = admm["info"].beta
+    lambda_beta_normal = normal["info"].beta
+    print(f"ADMM ({nb}): {lambda_beta_admm}")
+    print(f"Normal ({nb}): {lambda_beta_normal}")
+
+    def verify2(params: Dict[str, Any]) -> bool:
+        return params.get("save_admm_iterations") is not None
+
+    gamma_experiments = [(eval(p), v) for p, v in cache.items() if verify2(eval(p))]
+    gamma_experiments = sorted(gamma_experiments, key=lambda x: x[0]["gamma"])
+
+    fig, ax = plt.subplots(1, 1, figsize=(11, 7))
+    # ax = ax.ravel()
+    markers = ["o", "s", "v", "d", "p", "h"]
+    linestyles = ["-", "--", "-.", ":", "dashdot", "dotted"]
+    for i, (param, val) in enumerate(gamma_experiments):
+        gamma = param["gamma"]
+        total_cost = [e.total_cost for e in val[0]]
+        x = np.array(list(range(len(total_cost))))
+        ax.plot(
+            x,
+            total_cost,
+            label=rf"$\gamma={gamma}$",
+            linestyle=linestyles[i],
+            linewidth=1,
+            marker=markers[i],
+        )
+    ax.step(
+        x,
+        [normal["result"].total_cost for _ in range(len(x))],
+        label="Optimal",
+        where="post",
+        color="black",
+        linewidth=1.8,
+    )
+
+    ax.set_xlabel("# ADMM iterations")
+    ax.set_ylabel("Total cost [DKK]")
+    ax.legend(loc="best")
+    _set_font_size(ax)
+
+
+def admm_scenarios() -> None:
+    cache = load_cache()
+
+    def verify(params: Dict[str, Any], oos: bool) -> bool:
+        return (
+            params["analysis"] == "analysis1"
+            and params.get("run_oos") is oos
+            and Case.mFRR_AND_ENERGY.name in params["case"]
+            and (params["year"] == 2021 if not oos else params["year"] == 2022)
+            and params["one_lambda"] is False
+            and not params.get("save_admm_iterations")
+            and not params.get("gamma")
+            and params["admm"]
+        )
+
+    is_admm_experiments = [
+        (eval(p), v) for p, v in cache.items() if verify(eval(p), False)
+    ]
+    is_admm_experiments = sorted(
+        is_admm_experiments, key=lambda x: x[0]["nb_scenarios_spot"]
+    )
+    oos_admm_experiments = [
+        (eval(p), v) for p, v in cache.items() if verify(eval(p), True)
+    ]
+    oos_admm_experiments = sorted(
+        oos_admm_experiments, key=lambda x: x[0]["nb_scenarios_spot"]
+    )
+
+    assert len(is_admm_experiments) == len(
+        oos_admm_experiments
+    ), "We expect the same number of experiments"
+
+    fig, ax = plt.subplots(1, 1, figsize=(11, 7))
+    is_nb = [p["nb_scenarios_spot"] for p, _ in is_admm_experiments]
+    is_total_cost = [v[1].total_cost for _, v in is_admm_experiments]
+    oos_nb = [p["nb_scenarios_spot"] for p, _ in oos_admm_experiments]
+    oos_total_cost = [
+        v[1].total_cost
+        if not isinstance(v[1], list)
+        else average_opt_results(v[1]).total_cost
+        for _, v in oos_admm_experiments
+    ]
+
+    is_base_cost = [v[1].base_cost_today for _, v in is_admm_experiments]
+    oos_base_cost = [
+        v[1].base_cost_today
+        if not isinstance(v[1], list)
+        else average_opt_results(v[1]).base_cost_today
+        for _, v in oos_admm_experiments
+    ]
+
+    ax.plot(
+        is_nb,
+        is_total_cost,
+        label="In-sample",
+        linestyle="-",
+        linewidth=1,
+        marker="o",
+        color="red",
+    )
+    ax.plot(
+        oos_nb,
+        oos_total_cost,
+        label="Out-of-sample",
+        linestyle="--",
+        linewidth=1,
+        marker="s",
+        color="red",
+    )
+    ax.plot(
+        is_nb,
+        is_base_cost,
+        label="Base cost (IS)",
+        linestyle="-",
+        linewidth=1.8,
+        color="black",
+    )
+    ax.plot(
+        oos_nb,
+        oos_base_cost,
+        label="Base cost (OOS)",
+        linestyle="--",
+        linewidth=1.8,
+        color="black",
+    )
+
+    ax.set_xlabel("# training scenarios")
+    ax.set_ylabel("Total cost [DKK]")
+    ax.legend(loc="best")
+    _set_font_size(ax)
+
+
+def receding_horizon_scenarios() -> None:
+    def verify(params: Dict[str, Any]) -> bool:
+        return params["analysis"] == "analysis3" and params.get("lookback")
+
+    def verify_admm(params: Dict[str, Any], nb: int) -> bool:
+        return (
+            params["analysis"] == "analysis1"
+            and params.get("run_oos") is True
+            and Case.mFRR_AND_ENERGY.name in params["case"]
+            and params["year"] == 2022
+            and params["one_lambda"] is False
+            and not params.get("save_admm_iterations")
+            and not params.get("gamma")
+            and params["admm"]
+            and params["nb_scenarios_spot"] == nb
+        )
+
+    cache = load_cache()
+    experiments = [(eval(p), v) for p, v in cache.items() if verify(eval(p))][0]
+
+    is_cost = [v.total_cost for v in experiments[1][0]]
+    oos_cost = [v.total_cost for v in experiments[1][1]]
+    oos_base_cost = [v.base_cost_today for v in experiments[1][1]]
+
+    nb = 50
+    _admm_nb = [(eval(p), v) for p, v in cache.items() if verify_admm(eval(p), nb)]
+    assert len(_admm_nb) == 1, "We expect only one experiment"
+    oos_admm_nb = [e.total_cost for e in _admm_nb[0][1][1]]
+
+    def verify_spot(params: Dict[str, Any]) -> bool:
+        return (
+            params["analysis"] == "analysis1"
+            and params.get("run_oos") is True
+            and Case.SPOT.name in params["case"]
+            and params["year"] == 2022
+            and not params.get("save_admm_iterations")
+            and not params.get("gamma")
+        )
+
+    _spot = [(eval(p), v) for p, v in cache.items() if verify_spot(eval(p))]
+    oos_spot = [e.total_cost for e in _spot[0][1][1]]
+
+    days = list(range(1, len(is_cost) + 1))
+    # convert list of integers 'days' to datetimes:
+    days = [datetime.datetime(2022, 1, 1) + datetime.timedelta(days=d) for d in days]
+
+    fig, ax = plt.subplots(1, 1, figsize=(14, 12))
+    ax.plot(
+        days,
+        np.cumsum(oos_cost),
+        label="Receding horizon",
+        linestyle="-",
+        linewidth=1,
+        marker="o",
+        markersize=1,
+        color="red",
+    )
+    ax.plot(
+        days,
+        np.cumsum(oos_admm_nb),
+        label="ADMM #50",
+        linestyle="-",
+        linewidth=1,
+        marker="s",
+        markersize=1,
+        color="blue",
+    )
+    ax.plot(
+        days,
+        np.cumsum(oos_spot),
+        label="Load shifting",
+        linestyle="-",
+        linewidth=1,
+        marker="v",
+        markersize=1,
+        color="orange",
+    )
+    ax.plot(
+        days,
+        np.cumsum(oos_base_cost),
+        label="Base cost",
+        linestyle="-",
+        linewidth=1.8,
+        color="black",
+    )
+
+    ax.set_ylabel("Cumulative cost [DKK]")
+    ax.legend(loc="best")
+    ax.xaxis.set_tick_params(rotation=45)
+    _set_font_size(ax)
+    plt.show()
+
+    pass
+
+
+def main() -> None:
+    if True:
+        admm_vs_normal_solution()
+        admm_scenarios()
+        receding_horizon_scenarios()
+    if False:
+        for params in Case.cases():
+            print(f"\n\nRunning {params}\n\n")
+            plot_results(params)
+        for params in Case.receding_horizon_cases():
+            print(f"\n\nRunning {params}\n\n")
+            plot_results(params)
+
+
+if __name__ == "__main__":
+    main()

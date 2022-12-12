@@ -1,0 +1,163 @@
+#%% # noqa
+####### PLOT CHUNK DATA #######
+from typing import cast
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+sns.set_theme()
+sns.set(font_scale=1.5)
+
+df = pd.read_csv(
+    "/Users/petergade/Repositories/flex/src/virtual_battery/data/chunk2.csv"
+)
+df["t"] = df["t"] / 4  # converted to hour
+df.columns
+
+tmp = "tmp_32.0"
+od = "od_32.0"
+
+# create three subplots sharing the x-axis (hours) of "tmp", "od", and Pt
+fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, figsize=(10, 10))
+ax1.step(df["t"], df[tmp], "b-", label="Air temperature")
+ax1.set_ylabel("Temperature [°C]")
+ax2.step(df["t"], df[od], "r-", label="Opening degree")
+ax2.set_ylabel("OD [%]")
+ax3.step(df["t"], df["Pt"], "g-", label="Power")
+ax3.set_ylabel("Pt [kW]")
+ax3.set_xlabel("Time [h]")
+ax3.set_xlim((0, 24))
+ax1.legend()
+ax2.legend()
+ax3.legend()
+# save figure to this folder
+plt.savefig("tmp_od_Pt.png", dpi=300)
+plt.show()
+
+
+#%% # noqa
+######### PLOT CHUNK SIMULATION OF 2nd ORDER TCL MODEL #########
+import matplotlib.pyplot as plt  # noqa
+import numpy as np  # noqa
+import pandas as pd  # noqa
+import seaborn as sns  # noqa
+
+from src.prepare_problem import build_uncertainty_set_v2  # noqa
+from src.prepare_problem import get_chunk_instance  # noqa
+
+df_scenarios = pd.read_csv(
+    # "/Users/petergade/Repositories/flex/src/virtual_battery/data/scenarios_mfrr_up.csv"
+    "/Users/petergade/Repositories/flex/src/virtual_battery/data/scenarios_v2.csv"
+)
+scenarios = build_uncertainty_set_v2(df_scenarios, nb=1)
+
+instance = get_chunk_instance(scenarios)
+
+tf = np.empty(96)
+tc = np.empty(96)
+
+dt = 0.25
+_t = np.arange(0.25, 24.25, dt)
+
+cc = instance.c_c
+cf = instance.c_f
+r_ci = instance.r_ci
+epsilon = instance.epsilon
+r_cf = instance.r_cf
+eta = cast(float, instance.eta)
+
+tc_true = instance.t_c_data
+od = instance.od  # type:ignore
+assert isinstance(od, np.ndarray)
+p_base = instance.p_base
+ti = instance.t_i
+_filter = instance.temperature_filter
+
+tf[0] = tc_true[0]
+tc[0] = tc_true[0]
+
+for i in range(1, 96):
+    h = i // 4
+    # simulate differential equation:
+    tf[i] = tf[i - 1] + dt * 1 / (cf * r_cf) * (tc[i - 1] - tf[i - 1])
+    delta = (
+        1
+        / cc
+        * (
+            1 / r_ci[i] * (ti[i] - tc[i - 1])
+            + 1 / r_cf * (tf[i - 1] - tc[i - 1])
+            - od[i] * eta * p_base[h]
+        )
+    )
+    tc[i] = tc[i - 1] + dt * delta + _filter[i] * epsilon
+
+sns.set_theme()
+sns.set(font_scale=1.5)
+
+fig, ax1 = plt.subplots(1, figsize=(10, 10))
+ax1.plot(_t, tf, "b-", label="Sim. food temperature")
+ax1.plot(_t, tc, "r-", label="Sim. air temperature")
+ax1.plot(
+    _t,
+    tc_true,
+    color="black",
+    linestyle="--",
+    label="Meas. air temperature",
+    alpha=0.5,
+)
+ax1.set_ylabel("Temperature [°C]")
+ax1.set_xlabel("Time [h]")
+ax1.set_xlim((0, 24))
+ax1.legend()
+# save figure to this folder
+plt.savefig("2ndFreezerModelSimulation.png", dpi=300)
+plt.show()
+
+import matplotlib.pyplot as plt  # noqa
+import pandas as pd  # noqa
+import seaborn as sns  # noqa
+from matplotlib.ticker import MaxNLocator  # noqa
+
+#%% # noqa
+######### PLOT CHUNK SCENARIOS #########
+from src.prepare_problem import build_uncertainty_set_v2  # noqa
+
+df_scenarios = pd.read_csv(
+    "/Users/petergade/Repositories/flex/src/virtual_battery/data/scenarios_v2.csv"
+)
+scenarios = build_uncertainty_set_v2(df_scenarios, nb=1)
+
+sns.set_theme()
+sns.set(font_scale=1.5)
+
+nb_scenarios = scenarios.lambda_rp.shape[0]
+t = np.arange(1, 25, 1)
+# t2 = np.repeat(t, nb_scenarios, axis=0)
+fig, (ax1, ax2) = plt.subplots(2, figsize=(10, 12))
+# plot all lambda_rp prices in same plot
+for omega in range(nb_scenarios):
+    if omega < nb_scenarios - 1:
+        ax1.step(t, scenarios.lambda_rp[omega, :], "b-", alpha=0.5, label="_nolegend_")
+    else:
+        ax1.step(
+            t, scenarios.lambda_rp[omega, :], "b-", alpha=0.5, label=r"$\lambda^{b}$"
+        )
+
+ax1.step(t, scenarios.lambda_spot[0, :], "r-", linewidth=3, label=r"$\lambda^{s}$")
+ax1.step(t, scenarios.lambda_mfrr[0, :], "g-", linewidth=3, label=r"$\lambda^{r}$")
+ax1.set_ylabel("Price [DKK/kWh]")
+ax1.set_xlabel("Time [h]")
+ax1.legend()
+
+x = scenarios.up_regulation_event.sum(axis=1).astype(int)
+ix = np.argsort(x)
+y = scenarios.prob
+ax2.plot(x[ix], y[ix], "o-", linewidth=3, label=r"$\pi_{\omega}$")
+ax2.set_xlabel(r"Up-regulation hours in scenario $\omega$")
+ax2.set_ylabel("Probability")
+ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+ax2.legend()
+
+plt.savefig("scenarios.png", dpi=300)
+plt.show()
