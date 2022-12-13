@@ -1,18 +1,13 @@
 import logging
 from typing import Any
 
-from src.optimization import create_latex_tables_analysis1, run_optimization
+from src.optimization import run_optimization
 
 from ..base import Case
 from ..experiment_manager.cache import cache  # noqa
 from ..experiment_manager.core import ETLComponent
 
 logger = logging.getLogger(__name__)
-
-
-class LatexTable(ETLComponent):
-    def experiment_run_latex_table(self, **kwargs: Any) -> None:
-        create_latex_tables_analysis1()
 
 
 class LookbackExperiment(ETLComponent):

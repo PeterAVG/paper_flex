@@ -1,0 +1,31 @@
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\subsection{Appendix}\label{appendix:A}
+
+Hao et al. \cite{hao2014aggregate} describes how a TCL can be modelled as a virtual battery using a first-order thermal-electric ODE:
+
+\begin{align}\label{eq:hao}
+    \frac{dT(t)}{dt} = \frac{1}{C}\left( \frac{1}{R}(T^{a}(t) - T(t)) + \eta P(t) \right)
+\end{align}
+
+Here, $T(t)$ is the temperature, $C$ is the thermal capacitance (kWh/$^{\circ}$C), $R$ is the thermal resistance ($^{\circ}$C/kW), $\eta$ is the coefficient of performance (COP), i.e., the cooling/heating effect, $P(t)$ is the power to the TCL, and $T^{a}(t)$ is the ambient temperature outside the TCL (typically around 20 $^{\circ}$C in an indoor environment).
+
+Note, (\ref{eq:hao}) can readily be formulated in a deterministic, state-space model as in (\ref{eq:sde1}). The following difference equation yields the Euler approximation of (\ref{eq:hao}) which can be used in an optimization model (with the same time step $dt$):
+
+\begin{align}\label{eq:hao_discretized}
+    T_{t+1} = T_t + dt\cdot \left( \frac{1}{C}\left( \frac{1}{R}(T^{a}_t - T_t) + \eta P_t \right)  \right)
+\end{align}
+
+Eq. (\ref{eq:hao}) and (\ref{eq:hao_discretized}) constitutes the most simple model of a TCL one can imagine, but, nevertheless, has a quite powerful interpretation: the rate of change of temperature is determined by the heat flux to the surrounding environment and the heat flux from the power source to the TCL. It thus captures the most fundamental temperature dynamics of a TCL.
+
+The steady-state power in (\ref{eq:hao}) is given by:
+
+\begin{align}\label{eq:hao_ss}
+    P^{ss}(t) = \frac{T^{a}(t) - T(t)}{\eta R}
+\end{align}
+
+The steady-state power is thus the power required to keep the temperature of the TCL constant with respect to the outside temperature, $T^{a}(t)$, given the efficiency of the system and the thermal resistance. A better energy efficiency can be achieved by either 1) increasing the mechanical efficiency of the cooling/heating system or 2) increasing the thermal resistance to the outside temperature by, e.g., insulating a freezer.
+
+The drawback of the first-order model in (\ref{eq:hao}) is that it is only parameterized by three parameters, and it excludes disturbances. Hence, it might not be an accurate model of a real system. The model can easily be extended to include more complicated dynamics such as heat exchange with a barrier between $T^{a}(t)$ and $T(t)$, additional disturbance terms (e.g., when a fridge is opened), hourly values of $C$ and $R$, etc. Nevertheless, (\ref{eq:hao}) serves as a good starting point for a simple TCL model.

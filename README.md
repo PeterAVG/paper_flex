@@ -1,6 +1,6 @@
 # Getting started
 
-TODO: look at bugbear configuration
+TODO: perhaps create sde.R file for CTSM-R
 
 ### Installing Python 3.11.0
 Use pyenv to install python 3.11.0: https://github.com/pyenv/pyenv

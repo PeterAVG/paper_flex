@@ -7,7 +7,7 @@
 \usepackage{amssymb}
 \usepackage{bbm}
 \usepackage{mathabx}
-\usepackage{caption}
+\usepackage[tableposition=top]{caption}
 \usepackage{subcaption}
 \usepackage{booktabs} % for \midrule in tables
 \usepackage{float}
@@ -25,7 +25,17 @@
 \usepackage{shellesc}
 \usepackage{authblk}
 \usepackage[symbol]{footmisc}
+\usepackage{hhline}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
+}
+% \usepackage[intoc]{nomencl}
+\usepackage[toc]{glossaries}
 
+\DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 
@@ -64,17 +74,28 @@
 \addbibresource{bibliography/Bibliography.bib}
 
 \usepackage{color}   %May be necessary if you want to color links
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true, %set true if you want colored links
-    linktoc=all,     %set to all if you want both sections and subsections linked
-    linkcolor=blue,  %choose some color if you want links to stand out
-}
 
 \newcommand{\Lagr}{\mathcal{L}}
 \newcommand{\Uniform}{\mathcal{U}}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 \DeclareMathOperator{\E}{\mathbb{E}}
+
+% \makenomenclature
+\newglossary*{type1}{Nomenclature}
+\newglossary*{type2}{Abbreviations}
+\makeglossaries
+
+
+\newglossaryentry{IS}{
+    name=IS,
+    description={In-sample},
+    type=type1
+}
+\newglossaryentry{OOS}{
+    name=OOS,
+    description={Out-of-sample},
+    type=type2
+}
 
 \begin{document}
 \title{
@@ -97,7 +118,16 @@
 \date{\today}
 %\maketitle
 {\let\newpage\relax\maketitle}
-%\tableofcontents
+
+\tableofcontents
+
+% \printnomenclature
+\newpage
+
+\printglossary[type=type1, nonumberlist]
+\printglossary[type=type2, nonumberlist]
+\glsenablehyper
+
 
 \input{sections/abstract}
 
@@ -105,44 +135,207 @@ Change something here in Overleaf and push to repo.
 
 \input{sections/introduction}
 
-% \section*{Research questions}
+\section{Literature review}
 
-% \subsection{Second-order model}
+Test that I can refer to \gls{OOS} and \gls{IS}.
 
-% \subsection{Parameter estimation}
+\section{Monetizing flexibility}
 
-% \subsection{Model validation}
+\subsection{mFRR}
 
-% \section{Revenue streams from flexibility}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figures/timeline_mfrr.png}
+    \caption{Timeline of cost components in (\ref{eq:mFRRObjective}). }
+    \label{fig:timeline_mfrr}
+\end{figure}
 
-% \subsection{Ancillary services}
+\subsection{Load shifting}
 
-% \subsubsection{mFRR}
+\section{Grey-box modelling}
 
-% \subsubsection{FCR}
+\textcolor{red}{Most - if not all - of this goes to appendix}
+\subsection{Prediction error method vs simulation errors}
 
-% \subsection{Spot price optimization}
 
-% \section{Flexibility modelling}
+\section{Thermostatically controlled loads}
 
-% \subsection{Spot price optimization}
+TCLs are characterized by being controlled such that the temperature is kept at a specified setpoint. Examples includes heat pumps, freezers, air condition units, ovens, etc. They are widely believed to constitute an important part of demand-side flexibility due to the inherent thermal inertia of such temperature-driven systems.
 
-% \subsection{mFRR}
+In this paper, we focus on freezers, which are a common type of TCL. Specifically, we focus on a single freezer display in a Danish supermarket. Freezers are characterized by a large thermal inertia due to the frozen food, which makes them suitable for flexibility. On the other hand, the there is a risk of food degradation when utilizing flexibility. Therefore, it is important to model the temperature dynamics in the freezer for a realistic estimation of its flexibility.
 
-% \subsection{FCR}
+The rest of the section is organized as follows. First, we visualize the most important measurements from a real supermarket freezer. Second, we introduce a second-order model that characterizes the supermarket freezer. Third, we validate the second-order model and show how it can be used to simulate a demand response from a freezer.
 
-% \section{Case studies}
+\subsection{Visualization of freezer measurements}
 
-% \subsection{Spot price optimization}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figures/tmp_od_Pt.png}
+    \caption{\textbf{Top}: yearly average temperature of a single freezer in a supermarket. \textbf{Middle}: opening degree of the freezer expansion valve. \textbf{Bottom}: power of the compressors feeding all the freezers (scaled to only include all freezers in the supermarket).}
+    \label{fig:chunk}
+\end{figure}
 
-% \subsection{mFRR}
+\subsection{Thermal modelling of freezer}
 
-% \subsection{FCR}
+In Appendix \ref{appendix:A}, it is described how a simple TCL model can be made. We extend it to a second-order model that accounts for the thermal mass of the food, which essentially provides the flexibility in freezers:
+
+\begin{subequations}\label{eq:2ndFreezer}
+    \begin{align}
+        \frac{dT^f(t)}{dt} & = \frac{1}{C^f}\left(\frac{1}{R^{cf}} (T^c(t) - T^f(t)) \right)                                                                                  \\
+        \frac{dT^c(t)}{dt} & = \frac{1}{C^c}\Bigl(\frac{1}{R^{cf}} (T^f(t) - T^c(t)) + \frac{1}{R^{ci}(t)} (T^i(t) - T^c(t))                                         - \notag \\ & \mspace{50mu} \eta \cdot OD(t) P(t) \Bigr) + \epsilon \mathbbm{1}^{df}
+    \end{align}
+\end{subequations}
+
+In state-space form, it is:
+
+\begin{subequations}\label{eq:2ndFreezerStateSpace}
+    \begin{align}
+        T^{f}_{t+1} & = T^{f}_{t} + dt \cdot \frac{1}{C^f}\left(\frac{1}{R^{cf}} (T^{c}_{t} - T^{f}_{t}) \right)                                                                               \\
+        T^{c}_{t+1} & = T^{c}_t + dt \cdot \frac{1}{C^c}\Bigl(\frac{1}{R^{cf}} (T^{f}_t - T^{c}_t) + \frac{1}{R^{ci}_{t}} (T^{i}_t - T^{c}_t)                                         - \notag \\ & \mspace{50mu} \eta \cdot OD_t P_t \Bigr) + \epsilon \mathbbm{1}^{df}
+    \end{align}
+\end{subequations}
+
+
+Here, $T^c$ is the air temperature in the freezer, and $T^f$ is the food temperature which is a latent, unobserved state. It is essentially a low-pass filter of the air temperature in the freezer with time constant $\tau = C^f R^{cf}$. $C^f$ and $C^c$ are the thermal capacitance of the food and air in the freezer, respectively. $R^{cf}$ and $R^{ci}$ are the thermal resistance between food and air, and air and indoor temperature, respectively. Furthermore, $\epsilon$ represents the temperature change when defrosting and $\mathbbm{1}^{df}$ is an indicator for when defrosting happens. $R^{ci}$ is time-varying to capture the differences between opening- and closing hours. The opening degree, $OD_t$, and power $P_t$, are exogenous inputs.
+
+\subsection{Validation and simulation}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}[b]{.49\textwidth}
+        \centering
+        \includegraphics[width=0.89\textwidth]{figures/2ndFreezerModelValidation.png}
+        \caption{Validation of the state-space model in (\ref{eq:2ndFreezerStateSpace}). Left: auto-correlation function of the model residuals. Right: cumulated periodogram of the residuals.}
+        \label{fig:2ndFreezerModelValidation}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.49\textwidth}
+        \centering
+        \begin{tabular}[b]{|l|l|l|}
+            \hline
+            Parameter       & Value & Unit            \\ \hhline{|=|=|=|}
+            $C^f$           & 5.50  & kWh/$^{\circ}$C \\
+            $C^c$           & 0.13  & kWh/$^{\circ}$C \\
+            $R^{cf}$        & 4.91  & $^{\circ}$C/kW  \\
+            $R^{ci, day}$   & 25.6  & $^{\circ}$C/kW  \\
+            $R^{ci, night}$ & 46.5  & $^{\circ}$C/kW  \\
+            $\eta$          & 2.38  &                 \\
+            $\epsilon$      & 6.477 & $^{\circ}$C/h   \\ \hline
+        \end{tabular}
+        \newline
+        \newline
+        \newline
+        \caption{Parameter estimates of eq. (\ref{eq:2ndFreezerStateSpace}). \newline \newline}%
+        \label{tab:2ndFreezerParam}
+    \end{subfigure}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figures/2ndFreezerModelSimulation.png}
+    \caption{ \textbf{Left}: Simulation of (\ref{eq:2ndFreezerStateSpace}) using the parameters in Table \ref{tab:2ndFreezerParam} \textbf{Right}: Simulation where power is turned off for two hours with a subsequent rebound at the nominal power until the food temperature is back to its normal value.}
+    \label{fig:2ndFreezerModelSimulation}
+\end{figure}
+
+\section{Optimization model}
+
+\subsection{Objective function}
+
+\subsection{Scenario generation}
+
+\subsection{Decomposition}
+
+Write about ADMM to solve the optimization problem.
+
+
+\section{Results}
+
+\subsection{ADMM}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figures/admm_vs_normal_solution.png}
+    \caption{ADMM solution versus the optimal solution for five scenarios.}
+    \label{fig:admm_vs_normal_solution}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figures/admm_nb_scenarios_effect.png}
+    \caption{Effect of number of in-sample scenarios on out-of-sample performance for ADMM. Both are compared to the baseline costs of the freezer.}
+    \label{fig:admm_nb_scenarios_effect}
+\end{figure}
+
+\subsection{Lookback}
+
+TODO: create plot of effect of lookback parameter.
+
+\subsection{Load shifting vs mFRR}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\textwidth]{figures/cumulative_cost_comparison.png}
+    \caption{Out-of-sample cumulative costs for load shifting and mFRR using ADMM with 50 scenarios and a lookback of 5 scenarios.}
+    \label{fig:cumulative_cost_comparison}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \makebox[\linewidth][c]{%
+        \begin{subfigure}[t]{.65\textwidth}
+            \centering
+            \captionsetup{width=.90\linewidth}
+            \includegraphics[width=.95\linewidth]{figures/spot_single_case.png}
+            \caption{\textbf{Top}: Power profile when load shifting and baseline power of freezer. \textbf{Middle}: Air and food temperature dynamics. \textbf{Bottom}: Spot price in scenario.}
+            \label{fig:spot_single_case}
+        \end{subfigure}%
+        \hfill
+        \begin{subfigure}[t]{.65\textwidth}
+            \centering
+            \captionsetup{width=.90\linewidth}
+            \includegraphics[width=.95\linewidth]{figures/mFRR_single_case.png}
+            \caption{\textbf{Top}: Reservation capacities and baseline power of freezer. \textbf{Upper middle}: Air and food temperature dynamics. \textbf{Lower Middle}: mFRR activations in this scenarios, i.e., when $\lambda_{h}^{bid} \leq \lambda_{h}^{b}$ and $\lambda_{h}^{b} > \lambda_{h}^{s}$ and $p^{r,\uparrow}_{h} > 0$. \textbf{Bottom}: Spot price, balancing price, and bid in scenario.}
+            \label{fig:mFRR_single_case}
+        \end{subfigure}%
+    }
+    \caption{Comparison between load shifting and mFRR in one scenario in-sample. \textbf{Left}: Load shifting. \textbf{Right}: mFRR.}
+    \label{fig:load_shift_case_vs_mFRR_case}
+\end{figure}
+
+\begin{table}[H]
+    \caption{Out-of-sample costs of freezer in [DKK/day] for mFRR with five days lookback, load shifting, and mFRR trained with 50 in-sample scenarios using ADMM.}
+    \label{tab:cases_compared}
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        Name                 & mFRR w. lookback & Load shifting & mFRR w. 2021 \\
+        \midrule
+        Base cost today      & 40.628           & 40.628        & 40.628       \\
+        Total cost           & 35.918           & 34.994        & 36.514       \\
+        Expected energy cost & 40.628           & 34.994        & 40.628       \\
+        Rebound cost         & 0.858            & 92.869        & 0.911        \\
+        Reserve payment      & 3.216            & 0.0           & 3.381        \\
+        Act payment          & 8.092            & 0.0           & 2.161        \\
+        Penalty cost         & 5.741            & 0.0           & 0.516        \\
+        Scenarios            & -5               & 1             & 50           \\
+        Admm                 & False            & False         & True         \\
+        \% savings           & 11.6             & 13.9          & 10.1         \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Discussion}
 
 
 \input{sections/conclusion}
 
+Test that I can refer to \gls{OOS} and \gls{IS}.
+
+\input{sections/appendix}
+
 \input{sections/acknowledgement}
+
 
 %\listoftodos
 

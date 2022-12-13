@@ -34,167 +34,152 @@ def _set_font_size(ax: Any, misc: int = 26, legend: int = 14) -> None:
             item.set_fontsize(legend)
 
 
-def plot_results(params: Dict[str, Any], result: Optional[Any] = None) -> None:
-    if result is None:
-        cache = load_cache()
-        try:
-            information = cache[params.__repr__()][0]
-        except FileNotFoundError:
-            print("File not found.")
-            raise Exception("File not found.")
-    else:
-        information = result[0]
+def plot_spot_case_result() -> None:
+    cache = load_cache()
 
-    # plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
+    params = Case.default_params()
+    params["case"] = Case.SPOT.name
+    params["run_oos"] = False
+    params["year"] = 2021
+    params["one_lambda"] = False  # does not make sense for spot. Delete
+    params["nb_scenarios_spot"] = 10  # does not make sense for spot. Delete
 
-    # Plot results
-    if Case.SPOT not in params:
-        fig, ax = plt.subplots(4, 1, figsize=(11, 16))
-        ax = ax.ravel()
-        x = np.array(list(range(24)))
-        y = information.p_base - information.p_up_reserve
-        # mask = pt >= p_base
-        # y[mask] = p_base[mask]
-        # y2 = p_base + activation
-        # y2[mask] = p_base[mask]
-        ax[0].step(x, information.p_base, color="black", where="post")
-        ax[0].step(x, y, color="black", linestyle="--", where="post")
-        # ax[0].step(x, p_base2, color="green", linestyle="-.")
-        # ax[0].step(x, p_base + activation, color="blue", linestyle=":").
-        # ax[0].set_xlabel("Hour of day")
-        ax[0].set_ylabel("Power [kW]")
-        # ax[0].set_title(title)
-        # ax[0].fill_between(x, p_base, y, step="pre", alpha=0.2, color="red")
-        # ax[0].fill_between(x, p_base, y2, step="pre", alpha=0.2, color="blue")
-        ax[0].legend([r"$P^{B}_{h}$", r"$p^{r,\uparrow}_{h}$"], loc="upper right")
-        # ax[0].set_xlabel("Time [h]")
+    information, _ = cache[params.__repr__()]
 
-        # Temperature dynamics
-        w = -1
-        # _w = information.lambda_rp.shape[0]
-        x2 = np.array(list(range(96))) / 4
-        # ax[1].set_title("Scenario {}".format(w))
-        ax[1].plot(x2, information.t_c[w, :], label=r"$T^{c}_{17,t}$")
-        ax[1].plot(x2, information.t_f[w, :], label=r"$T^{f}_{17,t}$")
-        ax[1].plot(x2, information.t_c_base, label=r"$T^{c}_{t}$", alpha=0.5)
-        ax[1].plot(x2, information.t_f_base, label=r"$T^{f}_{t}$", alpha=0.5)
-        ax[1].plot(
-            x2, information.t_c_data, label="Measurements", color="black", linestyle=":"
-        )
-        # ax[1].plot(x2, t_f[w, :], label="TcFood")
-        ax[1].set_ylabel(r"Temperature [$^\circ$C]")
-        ax[1].legend(loc="upper right")
-        # ax[1].set_xlabel("Time [h]")
+    fig, ax = plt.subplots(3, 1, sharex=True, figsize=(11, 13))
+    ax = ax.ravel()
+    x = np.array(list(range(24)))
+    y = information.p_base - information.p_up_reserve
 
-        # power dynamics
-        _pt = information.pt[w, :]
+    # Temperature dynamics
+    w = -1
+    x2 = np.array(list(range(96))) / 4
+    ax[1].plot(x2, information.t_c[w, :], label=r"$T^{c}_{t}$")
+    ax[1].plot(x2, information.t_f[w, :], label=r"$T^{f}_{t}$")
+    # ax[1].plot(x2, information.t_c_base, label=r"$T^{c}_{t}$", alpha=0.5)
+    # ax[1].plot(x2, information.t_f_base, label=r"$T^{f}_{t}$", alpha=0.5)
+    ax[1].plot(
+        x2, information.t_c_data, label="Measurements", color="black", linestyle=":"
+    )
+    ax[1].set_ylabel(r"Temperature [$^\circ$C]")
+    ax[1].legend(loc="upper right")
+    # ax[1].set_xlabel("Time [h]")
 
-        ax[2].step(
-            x, information.p_base, label=r"$P^{B}_{h}$", color="black", where="post"
-        )
-        ax[2].step(
-            x, _pt, label=r"$p_{17,h}$", color="black", linestyle="--", where="post"
-        )
-        # ax[2].set_xlabel("Time [h]")
-        ax[2].set_ylabel("Power [kW]")
-        # ax[2].set_title("Scenario {}".format(w))
-        ax[2].legend(loc="upper left")
+    # power dynamics
+    _pt = information.pt[w, :]
 
-        ax[3].step(
-            x,
-            information.lambda_spot[w, :],
-            label=r"$\lambda_{h}^{s}$",
-            color="red",
-            where="post",
-        )
+    ax[0].step(x, information.p_base, label=r"$P^{B}_{h}$", color="black", where="post")
+    ax[0].step(x, _pt, label=r"$p_{h}$", color="black", linestyle="--", where="post")
+    # ax[0].set_xlabel("Time [h]")
+    ax[0].set_ylabel("Power [kW]")
+    ax[0].legend(loc="upper left")
 
-        ax[3].step(
-            x,
-            information.lambda_rp[w, :],
-            label=r"$\lambda_{17,h}^{b}$",
-            color="blue",
-            where="post",
-        )
-        ax[3].step(
-            x,
-            information.lambda_spot[w, :] + information.lambda_b[w, :],
-            label=r"$\lambda_{h}^{bid}$",
-            color="orange",
-            where="post",
-        )
-        ax[3].legend(loc="best")
-        ax[3].set_ylabel("Price [DKK/kWh]")
-        ax[3].set_xlabel("Time [h]")
-        # plt.rcParams.update({"font.size": 20})
-        _set_font_size(ax)
+    ax[2].step(
+        x,
+        information.lambda_spot[w, :],
+        label=r"$\lambda_{h}^{s}$",
+        color="red",
+        where="post",
+    )
+    ax[2].legend(loc="best")
+    ax[2].set_ylabel("Price [DKK/kWh]")
+    ax[2].set_xlabel("Time [h]")
 
-    else:
-        fig, ax = plt.subplots(3, 1, sharex=True, figsize=(11, 13))
-        ax = ax.ravel()
-        x = np.array(list(range(24)))
-        y = information.p_base - information.p_up_reserve
+    # plt.rcParams.update({"font.size": 14})
+    _set_font_size(ax)
 
-        # Temperature dynamics
-        w = -1
-        x2 = np.array(list(range(96))) / 4
-        # ax[1].set_title("Scenario {}".format(w))
-        ax[1].plot(x2, information.t_c[w, :], label=r"$T^{c}_{t}$")
-        ax[1].plot(x2, information.t_f[w, :], label=r"$T^{f}_{t}$")
-        # ax[1].plot(x2, information.t_c_base, label=r"$T^{c}_{t}$", alpha=0.5)
-        # ax[1].plot(x2, information.t_f_base, label=r"$T^{f}_{t}$", alpha=0.5)
-        ax[1].plot(
-            x2, information.t_c_data, label="Measurements", color="black", linestyle=":"
-        )
-        ax[1].set_ylabel(r"Temperature [$^\circ$C]")
-        ax[1].legend(loc="upper right")
-        # ax[1].set_xlabel("Time [h]")
+    plt.savefig("tex/figures/spot_single_case", dpi=300)
 
-        # power dynamics
-        _pt = information.pt[w, :]
 
-        ax[0].step(
-            x, information.p_base, label=r"$P^{B}_{h}$", color="black", where="post"
-        )
-        ax[0].step(
-            x, _pt, label=r"$p_{h}$", color="black", linestyle="--", where="post"
-        )
-        # ax[0].set_xlabel("Time [h]")
-        ax[0].set_ylabel("Power [kW]")
-        ax[0].legend(loc="upper left")
+def plot_mFRR_case_result() -> None:
+    cache = load_cache()
 
-        ax[2].step(
-            x,
-            information.lambda_spot[w, :],
-            label=r"$\lambda_{h}^{s}$",
-            color="red",
-            where="post",
-        )
-        ax[2].legend(loc="best")
-        ax[2].set_ylabel("Price [DKK/kWh]")
-        ax[2].set_xlabel("Time [h]")
+    params = Case.default_params()
+    params["case"] = Case.mFRR_AND_ENERGY.name
+    params["run_oos"] = False
+    params["year"] = 2021
+    params["one_lambda"] = False
+    params["admm"] = False
+    params["nb_scenarios_spot"] = 10
 
-        # plt.rcParams.update({"font.size": 14})
-        _set_font_size(ax)
+    information, _ = cache[params.__repr__()]
 
-    # NOTE: if w=-1, we are looking at the worst case scenario!
-    # join all keys in dict to string with "_"
-    keys = [
-        "analysis",
-        "case",
-        "run_oos",
-        "year",
-        "delta_max",
-        "one_lambda",
-        "nb_scenarios_spot",
-    ]
-    name = "__".join([str(k) + "_" + str(v) for k, v in params.items() if k in keys])
-    filename = f"{name}.png"
-    plt.savefig(f"{EXPERIMENT_FOLDER}/figures/{filename}", dpi=300)
+    fig, ax = plt.subplots(4, 1, figsize=(11, 16))
+    ax = ax.ravel()
+    x = np.array(list(range(24)))
+    y = information.p_base - information.p_up_reserve
+    ax[0].step(x, information.p_base, color="black", where="post")
+    ax[0].step(x, y, color="black", linestyle="--", where="post")
+    ax[0].set_ylabel("Power [kW]")
+    ax[0].legend([r"$P^{B}_{h}$", r"$P^{B}_{h} - p^{r,\uparrow}_{h}$"], loc="best")
 
-    plt.show()
+    # Temperature dynamics
+    w = -1
+    # _w = information.lambda_rp.shape[0]
+    x2 = np.array(list(range(96))) / 4
+    # ax[1].set_title("Scenario {}".format(w))
+    ax[1].plot(x2, information.t_c[w, :], label=r"$T^{c}_{t}$")
+    ax[1].plot(x2, information.t_f[w, :], label=r"$T^{f}_{t}$")
+    # ax[1].plot(x2, information.t_c_base, label=r"$T^{c}_{t}$", alpha=0.5)
+    # ax[1].plot(x2, information.t_f_base, label=r"$T^{f}_{t}$", alpha=0.5)
+    ax[1].plot(
+        x2, information.t_c_data, label="Measurements", color="black", linestyle=":"
+    )
+    # ax[1].plot(x2, t_f[w, :], label="TcFood")
+    ax[1].set_ylabel(r"Temperature [$^\circ$C]")
+    ax[1].legend(loc="best")
+    # ax[1].set_xlabel("Time [h]")
+
+    # power dynamics
+    _pt = information.pt[w, :]
+
+    ax[2].step(x, information.p_base, label=r"$P^{B}_{h}$", color="black", where="post")
+    ax[2].step(
+        x,
+        _pt,
+        label=r"$P^{B}_{h} - p^{b,\uparrow}_{h} + p^{b,\downarrow}_{h}$",
+        color="black",
+        linestyle="--",
+        where="post",
+    )
+    # ax[2].set_xlabel("Time [h]")
+    ax[2].set_ylabel("Power [kW]")
+    # ax[2].set_title("Scenario {}".format(w))
+    ax[2].legend(loc="best")
+
+    ax[3].step(
+        x,
+        information.lambda_spot[w, :],
+        label=r"$\lambda_{h}^{s}$",
+        color="red",
+        where="post",
+    )
+
+    ax[3].step(
+        x,
+        information.lambda_rp[w, :],
+        label=r"$\lambda_{h}^{b}$",
+        color="blue",
+        where="post",
+    )
+    ax[3].step(
+        x,
+        information.lambda_spot[w, :] + information.lambda_b[w, :],
+        label=r"$\lambda_{h}^{bid}$",
+        color="orange",
+        where="post",
+    )
+    ax[3].legend(loc="best")
+    ax[3].set_ylabel("Price [DKK/kWh]")
+    ax[3].set_xlabel("Time [h]")
+    # plt.rcParams.update({"font.size": 20})
+    _set_font_size(ax)
+
+    plt.savefig("tex/figures/mFRR_single_case", dpi=300)
 
 
 def plot_analysis2() -> None:
+    # TODO: delete function
     ### TABLE: ... ###
     cache = load_cache()
     res = []
@@ -264,7 +249,7 @@ def plot_analysis2() -> None:
 
     # _set_font_size(ax)
 
-    plt.savefig(f"{EXPERIMENT_FOLDER}/figures/analysis2_plots.png", dpi=300)
+    plt.savefig("tex/figures/analysis2_plots.png", dpi=300)
     plt.show()
 
 
@@ -367,6 +352,33 @@ def admm_vs_normal_solution() -> None:
     ax.set_ylabel("Total cost [DKK]")
     ax.legend(loc="best")
     _set_font_size(ax)
+    plt.savefig(f"tex/figures/admm_vs_normal_solution.png", dpi=300)
+
+
+def admm_50_scenarios_convergence() -> None:
+    cache = load_cache()
+
+    def verify(params: Dict[str, Any]) -> bool:
+        return (
+            params["analysis"] == "analysis1"
+            and params.get("run_oos") is False
+            and Case.mFRR_AND_ENERGY.name in params["case"]
+            and (params["year"] == 2021)
+            and params["one_lambda"] is False
+            and not params.get("save_admm_iterations")
+            # and not params.get("gamma")
+            and params["admm"]
+            and params["nb_scenarios_spot"] == 50
+        )
+
+    admm_experiments = [(eval(p), v) for p, v in cache.items() if verify(eval(p))]
+    print(len(admm_experiments))
+
+    # TODO: run admm with 50 scenarios where iterations are saved
+    exp = admm_experiments[0]
+
+
+# admm_50_scenarios_convergence()
 
 
 def admm_scenarios() -> None:
@@ -459,6 +471,7 @@ def admm_scenarios() -> None:
     ax.set_ylabel("Total cost [DKK]")
     ax.legend(loc="best")
     _set_font_size(ax)
+    plt.savefig("tex/figures/admm_nb_scenarios_effect.png", dpi=300)
 
 
 def receding_horizon_scenarios() -> None:
@@ -507,11 +520,11 @@ def receding_horizon_scenarios() -> None:
     # convert list of integers 'days' to datetimes:
     days = [datetime.datetime(2022, 1, 1) + datetime.timedelta(days=d) for d in days]
 
-    fig, ax = plt.subplots(1, 1, figsize=(14, 12))
+    fig, ax = plt.subplots(1, 1, figsize=(14, 14))
     ax.plot(
         days,
         np.cumsum(oos_cost),
-        label="Receding horizon",
+        label="mFRR: 5 days lookback",
         linestyle="-",
         linewidth=1,
         marker="o",
@@ -521,7 +534,7 @@ def receding_horizon_scenarios() -> None:
     ax.plot(
         days,
         np.cumsum(oos_admm_nb),
-        label="ADMM #50",
+        label="mFRR: 2021",
         linestyle="-",
         linewidth=1,
         marker="s",
@@ -551,23 +564,20 @@ def receding_horizon_scenarios() -> None:
     ax.legend(loc="best")
     ax.xaxis.set_tick_params(rotation=45)
     _set_font_size(ax)
+    plt.savefig("tex/figures/cumulative_cost_comparison.png", dpi=300)
     plt.show()
 
     pass
 
 
 def main() -> None:
-    if True:
+    if False:
         admm_vs_normal_solution()
         admm_scenarios()
         receding_horizon_scenarios()
-    if False:
-        for params in Case.cases():
-            print(f"\n\nRunning {params}\n\n")
-            plot_results(params)
-        for params in Case.receding_horizon_cases():
-            print(f"\n\nRunning {params}\n\n")
-            plot_results(params)
+    if True:
+        plot_spot_case_result()
+        plot_mFRR_case_result()
 
 
 if __name__ == "__main__":

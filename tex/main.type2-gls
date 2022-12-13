@@ -1,0 +1,7 @@
+\glossarysection[\glossarytoctitle]{\glossarytitle}\glossarypreamble
+\begin{theglossary}\glossaryheader
+\glsgroupheading{O}\relax \glsresetentrylist %
+\glossentry{OOS}{\glossaryentrynumbers{\relax
+		\setentrycounter[]{page}\glsnumberformat{3}\delimN
+		\setentrycounter[]{page}\glsnumberformat{12}}}%
+\end{theglossary}\glossarypostamble

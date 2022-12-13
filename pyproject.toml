@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "base-python-skeleton"
-version = "0.2.0"
+name = "paper-and-experiments"
+version = "0.1.0"
 description = ""
 authors = ["Peter Gade <petervistar@hotmail.com>"]
 maintainers = [
@@ -8,7 +8,7 @@ maintainers = [
 ]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/ELMA-Github/base-python-elma"
+repository = "https://github.com/PeterAVG/paper_flex"
 packages = [
   { include = "src"},
 ]
