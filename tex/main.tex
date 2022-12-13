@@ -83,7 +83,7 @@
 % \makenomenclature
 \newglossary*{type1}{Nomenclature}
 \newglossary*{type2}{Abbreviations}
-\makeglossaries
+\makenoidxglossaries
 
 
 \newglossaryentry{IS}{
@@ -124,8 +124,8 @@
 % \printnomenclature
 \newpage
 
-\printglossary[type=type1, nonumberlist]
-\printglossary[type=type2, nonumberlist]
+\printnoidxglossary[type=type1, nonumberlist]
+\printnoidxglossary[type=type2, nonumberlist]
 \glsenablehyper
 
 
