@@ -141,3 +141,4 @@ tex/ieee/*.blg
 tex/ieee/*.fdb_latexmk
 tex/ieee/*.pdf
 tex/ieee/*.synctex.gz
+tex/ieee/*.fls
