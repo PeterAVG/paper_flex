@@ -1,7 +1,10 @@
 VENV_DIR = .venv
 
 clean:
-	rm -rf *.aux *.dvi *.log *.pdf *.synctex.gz $(VENV_DIR) poetry.lock venv_julia .tmp .mypy_cache .pytest_cache
+	rm -rf $(VENV_DIR) poetry.lock venv_julia .tmp .mypy_cache .pytest_cache
+
+clean-tex:
+	rm -rf ieee/*.glo ieee/*.aux ieee/*.fls ieee/*.ist ieee/*-glg ieee/*-glo ieee/*-gls ieee/*.synctex.gz ieee/*.dvi ieee/*.log ieee/*.pdf
 
 dev-setup: $(VENV_DIR)/.made
 	$(VENV_DIR)/bin/pre-commit install -ft pre-push

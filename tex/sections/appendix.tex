@@ -1,8 +1,8 @@
-\appendix
-\section*{Appendices}
-\addcontentsline{toc}{section}{Appendices}
-\renewcommand{\thesubsection}{\Alph{subsection}}
-\subsection{Appendix}\label{appendix:A}
+{\appendices
+\section*{Appendix A}\label{appendix:A}
+% \addcontentsline{toc}{section}{Appendices}
+% \renewcommand{\thesubsection}{\Alph{subsection}}
+% \subsection{Appendix}\label{appendix:A}
 
 Hao et al. \cite{hao2014aggregate} describes how a TCL can be modelled as a virtual battery using a first-order thermal-electric ODE:
 
@@ -29,3 +29,6 @@ The steady-state power in (\ref{eq:hao}) is given by:
 The steady-state power is thus the power required to keep the temperature of the TCL constant with respect to the outside temperature, $T^{a}(t)$, given the efficiency of the system and the thermal resistance. A better energy efficiency can be achieved by either 1) increasing the mechanical efficiency of the cooling/heating system or 2) increasing the thermal resistance to the outside temperature by, e.g., insulating a freezer.
 
 The drawback of the first-order model in (\ref{eq:hao}) is that it is only parameterized by three parameters, and it excludes disturbances. Hence, it might not be an accurate model of a real system. The model can easily be extended to include more complicated dynamics such as heat exchange with a barrier between $T^{a}(t)$ and $T(t)$, additional disturbance terms (e.g., when a fridge is opened), hourly values of $C$ and $R$, etc. Nevertheless, (\ref{eq:hao}) serves as a good starting point for a simple TCL model.
+
+\section*{Appendix B}\label{appendix:B}
+Appendix two text goes here.}

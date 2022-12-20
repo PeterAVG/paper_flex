@@ -323,7 +323,7 @@ def admm_vs_normal_solution() -> None:
     gamma_experiments = [(eval(p), v) for p, v in cache.items() if verify2(eval(p))]
     gamma_experiments = sorted(gamma_experiments, key=lambda x: x[0]["gamma"])
 
-    fig, ax = plt.subplots(1, 1, figsize=(11, 7))
+    fig, ax = plt.subplots(1, 1, figsize=(12, 9))
     # ax = ax.ravel()
     markers = ["o", "s", "v", "d", "p", "h"]
     linestyles = ["-", "--", "-.", ":", "dashdot", "dotted"]
@@ -352,7 +352,7 @@ def admm_vs_normal_solution() -> None:
     ax.set_ylabel("Total cost [DKK]")
     ax.legend(loc="best")
     _set_font_size(ax)
-    plt.savefig(f"tex/figures/admm_vs_normal_solution.png", dpi=300)
+    plt.savefig("tex/figures/admm_vs_normal_solution.png", dpi=300)
 
 
 def admm_50_scenarios_convergence() -> None:
@@ -413,7 +413,7 @@ def admm_scenarios() -> None:
         oos_admm_experiments
     ), "We expect the same number of experiments"
 
-    fig, ax = plt.subplots(1, 1, figsize=(11, 7))
+    fig, ax = plt.subplots(1, 1, figsize=(12, 9))
     is_nb = [p["nb_scenarios_spot"] for p, _ in is_admm_experiments]
     is_total_cost = [v[1].total_cost for _, v in is_admm_experiments]
     oos_nb = [p["nb_scenarios_spot"] for p, _ in oos_admm_experiments]
@@ -571,11 +571,11 @@ def receding_horizon_scenarios() -> None:
 
 
 def main() -> None:
-    if False:
+    if True:
         admm_vs_normal_solution()
         admm_scenarios()
-        receding_horizon_scenarios()
-    if True:
+        # receding_horizon_scenarios()
+    if False:
         plot_spot_case_result()
         plot_mFRR_case_result()
 
