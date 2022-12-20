@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex ieee"] 1671547351 "ieee.aux" "ieee.bbl" "ieee" 1671547639
-  "../bibliography/Bibliography.bib" 1671546203 32433 8540dfa011571db9bde687ea7f4ffb77 ""
+["bibtex ieee"] 1671548433 "ieee.aux" "ieee.bbl" "ieee" 1671548440
   "/usr/local/texlive/2022/texmf-dist/bibtex/bst/ieeetran/IEEEtran.bst" 1440712899 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
-  "ieee.aux" 1671547639 12244 8d43c85ddad8f4bdebfa39126e2217ea "pdflatex"
+  "ieee.aux" 1671548439 12198 fa039064722a84d1f89d1e49e2aef2d9 "pdflatex"
+  "tex/bibliography/Bibliography.bib" 0 -1 0 ""
   (generated)
   "ieee.bbl"
   "ieee.blg"
-["pdflatex"] 1671547633 "/Users/petergade/Repositories/paper_flex/tex/ieee/ieee.tex" "ieee.pdf" "ieee" 1671547639
+["pdflatex"] 1671548434 "/Users/petergade/Repositories/paper_flex/tex/ieee/ieee.tex" "ieee.pdf" "ieee" 1671548440
   "../figures/2ndFreezerModelSimulation.png" 1670922601 408004 e7f2cd154f3ace2d5b80dabd8bd2d9b1 ""
   "../figures/2ndFreezerModelValidation.png" 1671185804 69279 4a7ab4267d61f7d9d56ec6dd8349c79a ""
   "../figures/admm_nb_scenarios_effect.png" 1671528641 283311 fbd2a59ae33ffd74f4198424fdf7bb05 ""
@@ -20,12 +20,12 @@
   "../sections/abstract.tex" 1671545120 795 d5b68ddcea1752d39fa04f2f1c51b51e ""
   "../sections/acknowledgement.tex" 1671531071 1114 c13570cc58e606fae589f2e2d49695fa ""
   "../sections/conclusion.tex" 1671530480 1256 2e16f8acedc9ee123fbc84c89bf64b19 ""
-  "../sections/introduction.tex" 1671545943 12259 02431857cc9d43ca1ac6796d634a4e7a ""
-  "../sections/results.tex" 1671547633 8559 639b06d61dd02f04c77a8c70b7faaec9 ""
+  "../sections/introduction.tex" 1671547696 12260 ffc72097f2a4ed46d42d40d30af0b789 ""
+  "../sections/results.tex" 1671547696 8558 770fc47378f40e72320b80a9e9c06bca ""
   "../sections/section2.tex" 1671546503 13807 b2b43350aeb8ef103bd05b61430dacd6 ""
-  "../sections/section3.tex" 1671547344 22876 9a05f7cb40cdcfbf53b5c11e1b94edf6 ""
+  "../sections/section3.tex" 1671548335 22813 d1c34b8c34cfb4168b1e09c4df94bb9f ""
   "/Users/petergade/Library/texlive/2022/texmf-var/fonts/pk/ljfour/public/bbm/bbm10.600pk" 1664878749 6964 e6de9051f00f8345257ec8689636180f ""
-  "/Users/petergade/Repositories/paper_flex/tex/ieee/ieee.tex" 1671545120 25210 84c8162b9c878a7192d127f068081282 ""
+  "/Users/petergade/Repositories/paper_flex/tex/ieee/ieee.tex" 1671548427 25202 d6fe3ab50b7fa49e4a7b62042f477cac ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/adobe/helvetic/phvr7t.tfm" 1136768653 2520 53e01eef820ca829e42c1333c3fd02b9 ""
@@ -157,9 +157,9 @@
   "/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1663245070 4595816 106c4e272f709332e200b7ab82c17944 ""
   "/usr/local/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt" 1663245152 3059190 c1683d7e34f5380c43d33ad9e508bc92 ""
   "/usr/local/texlive/2022/texmf.cnf" 1663245050 577 209b46be99c9075fd74d4c0369380e8c ""
-  "ieee.aux" 1671547639 12244 8d43c85ddad8f4bdebfa39126e2217ea "pdflatex"
-  "ieee.bbl" 1671547351 6822 75eb08388abf8425c5131b106b35dd4a "bibtex ieee"
-  "ieee.tex" 1671545120 25210 84c8162b9c878a7192d127f068081282 ""
+  "ieee.aux" 1671548439 12198 fa039064722a84d1f89d1e49e2aef2d9 "pdflatex"
+  "ieee.bbl" 1671548342 6822 75eb08388abf8425c5131b106b35dd4a "bibtex ieee"
+  "ieee.tex" 1671548427 25202 d6fe3ab50b7fa49e4a7b62042f477cac ""
   (generated)
   "ieee.aux"
   "ieee.log"

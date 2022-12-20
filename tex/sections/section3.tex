@@ -11,7 +11,6 @@ Figure \ref{fig:timeline_mfrr_variables} shows the stages for making decisions i
     \centering
     \includegraphics[width=\columnwidth]{../figures/timeline_mfrr_variables.png}
     \caption{Variables related to mFRR up-regulation decisions. The asterisk indicates the first-stage decision.}
-    \label{fig:timeline_mfrr_variables}
 \end{figure}
 
 \subsection{Scenario generation}\label{sec:scenario_generation}
@@ -43,7 +42,7 @@ The compact model formulation is presented in Problem \ref{P1:compact_model}. Th
         \\
         \quad                                                                                                        & \Bigl( \bm{p}^{r,\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \bm{p}_{\omega}^{b,\uparrow}, \bm{p}_{\omega}^{b,\downarrow}, \bm{s}_{\omega}, \bm{T}_{\omega}^{c}, \bm{T}_{\omega}^{f}, \notag \\ \quad & \quad \bm{T}_{\omega}^{c, B}, \bm{T}_{\omega}^{f,B}, \bm{\phi}_{\omega}, \bm{g}_{\omega} \Bigr) \in \mathbb{R}^{n}  \label{P1:eq4}
         \\
-        \quad                                                                                                        & \bm{u}_{\omega}, \bm{z}_{\omega}, \bm{y}_{\omega} \in \{0,1\}  \label{P1:eq4}
+        \quad                                                                                                        & \bm{u}_{\omega}, \bm{z}_{\omega}, \bm{y}_{\omega} \in \{0,1\}  \label{P1:eq5}
     \end{align}
 \end{subequations}
 
@@ -61,7 +60,7 @@ A bidding policy needs to be easy to follow OOS for the trader. We choose an aff
 \begin{subequations}\label{eq:affine_policy}
     \begin{align}
         \lambda^{bid}_{h,\omega} & = \alpha \lambda_{h,\omega}^{s,\text{diff}} + \beta + \lambda_{h,\omega}^{s}, \quad \forall{\omega}, \forall{h} \in \{1\ldots23\}\label{affine_policy:1} \\
-        \alpha                   & \geq 0\label{affine_policy:2}                                                                                                                                                    \\
+        \alpha                   & \geq 0\label{affine_policy:2}                                                                                                                            \\
         \beta                    & \geq 0\label{affine_policy:3}
     \end{align}
 \end{subequations}
