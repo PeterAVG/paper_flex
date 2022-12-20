@@ -133,3 +133,11 @@ dmypy.json
 # scripts/
 .tmp/
 venv_julia
+
+# ignore the following for easy compatibility with Overleaf
+tex/ieee/*.aux
+tex/ieee/*.bbl
+tex/ieee/*.blg
+tex/ieee/*.fdb_latexmk
+tex/ieee/*.pdf
+tex/ieee/*.synctex.gz
