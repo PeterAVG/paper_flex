@@ -142,3 +142,10 @@ tex/ieee/*.fdb_latexmk
 tex/ieee/*.pdf
 tex/ieee/*.synctex.gz
 tex/ieee/*.fls
+tex/figures/*.aux
+tex/figures/*.bbl
+tex/figures/*.blg
+tex/figures/*.fdb_latexmk
+tex/figures/*.pdf
+tex/figures/*.synctex.gz
+tex/figures/*.fls

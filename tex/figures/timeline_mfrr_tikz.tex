@@ -1,0 +1,55 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[usenames]{color} %used for font color
+\usepackage{amssymb} %maths
+\usepackage{amsmath} %maths
+\usepackage[utf8]{inputenc} %useful to type directly diacritic characters
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows,patterns,intersections}
+\usetikzlibrary{shapes.multipart}
+\usepackage{pgfplots}
+\usepgfplotslibrary{fillbetween}
+\pgfmathdeclarefunction{gauss}{2}{%
+  \pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
+}
+\begin{document}
+\definecolor{RectangleColor}{RGB}{197,224,180}
+
+\begin{tikzpicture}[scale=0.75,every text node part/.style={align=center}]
+
+    \draw[rounded corners, fill=RectangleColor, very thick] (0, 1) rectangle (4, 3) node[midway]{\LARGE mFRR \\ \LARGE reservation};
+    \node at (2,0) {\LARGE $\lambda_{h}^{r} p_{h}^{r,\uparrow}$};
+    \node at (2,-2) {\LARGE D$-$1};
+
+
+    \draw[rounded corners, fill=RectangleColor, very thick] (5, 1) rectangle (9, 3) node[midway]{\LARGE Day-ahead \\ \LARGE cost};
+    \node at (7,0) {\LARGE $-\lambda_{h}^{s} p_{h}^{\text{Base}}$};
+    \node at (7,-2) {\LARGE D$-$1};
+
+    \draw[rounded corners, fill=RectangleColor, very thick] (10, 1) rectangle (14, 3) node[midway]{\LARGE mFRR bid};
+    \node at (12,0) {\LARGE $\lambda_{h}^{\text{bid}}$};
+    \node at (12,-2) {\LARGE D$-$1};
+
+    \draw[name path=VerticalDashedLine, dashed, line width=0.45mm, black](14.5,-1)--(14.5,3);
+
+    \draw[rounded corners, fill=RectangleColor, very thick] (15, 1) rectangle (19, 3) node[midway]{\LARGE mFRR \\ \LARGE activation};
+    \node at (17,0) {\LARGE $\lambda_{h}^{b} p_{h}^{b,\uparrow}$};
+    \node at (17,-2) {\LARGE D};
+
+    \draw[rounded corners, fill=RectangleColor, very thick] (20, 1) rectangle (24, 3) node[midway]{\LARGE Rebound \\ \LARGE cost};
+    \node at (22,0) {\LARGE $-\lambda_{h}^{b} p_{h}^{b,\downarrow}$};
+    \node at (22,-2) {\LARGE D};
+
+
+    % Right arrow
+    \node (source) at (0, -1) {};
+    \node (destination) at (24,-1){};
+    \draw[->, line width=0.65mm, black](source)--(destination);
+
+
+\end{tikzpicture}
+
+
+
+
+
+\end{document}

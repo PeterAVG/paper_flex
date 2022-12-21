@@ -7,10 +7,17 @@ In this section, the optimization problem is presented. First, the time sequence
 Figure \ref{fig:timeline_mfrr_variables} shows the stages for making decisions in the mFRR market. First, a reservation bid, $p_{h}^{r,\uparrow}$ is submitted. For any reservation bid accepted, a regulating power bid must be submitted, $\lambda_{h,\omega}^{\text{bid}}$. The reservation and bid are the \textit{first-stage} decisions. The set $\Gamma_{\omega}$, contains all real-time variables in the optimization problem and are the \textit{second-stage} decisions. They control the real-time power, auxillary variables for identifying up- and down-regulation\footnote{Down-regulation refers to the rebound action in this context.}, temperature dynamics, and when to deliver up-regulation according to the bid. For more details, see Section \ref{sec:final_model}. The index, $\omega$, specifies a scenario.
 
 
-\begin{figure}[!t]\label{fig:timeline_mfrr_variables}
+% \begin{figure}[!t]\label{fig:timeline_mfrr_variables}
+%     \centering
+%     \includegraphics[width=\columnwidth]{../figures/timeline_mfrr_variables.png}
+%     \caption{Variables related to mFRR up-regulation decisions. The asterisk indicates the first-stage decision.}
+% \end{figure}
+
+\begin{figure}[!t]
     \centering
-    \includegraphics[width=\columnwidth]{../figures/timeline_mfrr_variables.png}
-    \caption{Variables related to mFRR up-regulation decisions. The asterisk indicates the first-stage decision.}
+    \includestandalone[width=\columnwidth]{../figures/timeline_mfrr_variables_tikz}
+    \caption{Variables related to mFRR up-regulation decisions. The asterisk indicates the first-stage decision, and \\ $\Gamma_{\omega} = \{ \bm{p}^{r,\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \bm{p}_{\omega}^{b,\uparrow}, \bm{p}_{\omega}^{b,\downarrow}, \bm{s}_{\omega}, \bm{T}_{\omega}^{c}, \bm{T}_{\omega}^{f}, \bm{T}_{\omega}^{c, B}, \bm{T}_{\omega}^{f,B}, \bm{\phi}_{\omega}, \bm{g}_{\omega} \}$ is the set of second-stage decision variables.}
+    \label{fig:timeline_mfrr_variables}
 \end{figure}
 
 \subsection{Scenario generation}\label{sec:scenario_generation}

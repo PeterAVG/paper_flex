@@ -5,6 +5,7 @@ clean:
 
 clean-tex:
 	rm -rf tex/ieee/*.glo tex/ieee/*.aux tex/ieee/*.fls tex/ieee/*.ist tex/ieee/*-glg tex/ieee/*-glo tex/ieee/*-gls tex/ieee/*.synctex.gz tex/ieee/*.dvi tex/ieee/*.log tex/ieee/*.pdf tex/ieee/*.bbl tex/ieee/*.blg tex/ieee/*.fdb_latexmk
+	rm -rf tex/figures/*.glo tex/figures/*.aux tex/figures/*.fls tex/figures/*.ist tex/figures/*-glg tex/figures/*-glo tex/figures/*-gls tex/figures/*.synctex.gz tex/figures/*.dvi tex/figures/*.log tex/figures/*.pdf tex/figures/*.bbl tex/figures/*.blg tex/figures/*.fdb_latexmk
 
 dev-setup: $(VENV_DIR)/.made
 	$(VENV_DIR)/bin/pre-commit install -ft pre-push
