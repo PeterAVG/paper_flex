@@ -64,7 +64,7 @@ class mFRRExperiment(ETLComponent):
                         params["one_lambda"] = False
                         params["admm"] = _admm
                         params["nb_scenarios_spot"] = _nb_scenarios
-                        if _admm:
+                        if _admm and not _run_oos:
                             params["save_admm_iterations"] = True
                             params["gamma"] = gamma
 
