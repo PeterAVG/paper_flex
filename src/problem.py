@@ -1218,7 +1218,7 @@ class SolverInstance:
                             p_up_reserve[t]
                             * g_indicator[w, t]
                             * up_regulation_event[w, t],
-                            atol=1e-04,
+                            atol=1e-03,
                         )
                     )
                     for w in range(p_up.shape[0])
@@ -1227,7 +1227,7 @@ class SolverInstance:
             )
             assert all(
                 [
-                    np.isclose(p_up[w, t], 0, atol=1e-04)
+                    np.isclose(p_up[w, t], 0, atol=1e-03)
                     if (
                         up_regulation_event[w, t] == 0
                         or g_indicator[w, t] == 0

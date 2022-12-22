@@ -34,10 +34,10 @@ plt.savefig("tex/figures/tmp_od_Pt.png", dpi=300)
 # plt.show()
 
 
-from typing import Tuple, cast  # noqa
-
 #%% # noqa
 ######### PLOT CHUNK SIMULATION OF 2nd ORDER TCL MODEL #########
+from typing import Tuple, cast  # noqa
+
 import matplotlib.pyplot as plt  # noqa
 import numpy as np  # noqa
 import pandas as pd  # noqa
@@ -89,7 +89,7 @@ def simulate(rebound: bool, tf_base: np.ndarray) -> Tuple[np.ndarray, np.ndarray
         else:
             p = p_base[h]
         # simulate differential equation:
-        tf[i] = tf[i - 1] + dt * 1 / (cf * r_cf) * (tc[i - 1] - tf[i - 1])
+        tf[i] = tf[i - 1] + dt * 1 / cf * (tc[i - 1] - tf[i - 1])
         delta = (
             1
             / cc
@@ -97,9 +97,10 @@ def simulate(rebound: bool, tf_base: np.ndarray) -> Tuple[np.ndarray, np.ndarray
                 1 / r_ci[i] * (ti[i] - tc[i - 1])
                 + 1 / r_cf * (tf[i - 1] - tc[i - 1])
                 - od[i] * eta * p
+                + _filter[i] * epsilon
             )
         )
-        tc[i] = tc[i - 1] + dt * delta + _filter[i] * epsilon
+        tc[i] = tc[i - 1] + dt * delta
 
     return tf, tc
 

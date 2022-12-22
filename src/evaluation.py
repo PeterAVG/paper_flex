@@ -30,10 +30,15 @@ def fix_model(
     cache: Dict[str, Any] = load_cache()
 
     try:
-        information = cache[params.__repr__()][0]
+        result = cache[params.__repr__()]
     except FileNotFoundError:
         print("File not found. Can't run OOS. Stopping.")
         raise Exception("File not found. Can't run OOS. Stopping.")
+
+    if params.get("save_admm_iterations") is not None:
+        information = result[1]
+    else:
+        information = result[0]
 
     p_up_reserve = information.p_up_reserve
     lambda_spot = instance.lambda_spot

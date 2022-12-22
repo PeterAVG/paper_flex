@@ -50,26 +50,28 @@ class mFRRExperiment(ETLComponent):
         nb_scenarios = [1, 5, 10, 20, 30, 40, 50, 100, 250]
         year = [2021, 2022]
         run_oos = [False, True]
-        admm = [False, True]
-        for _run_oos, _year in zip(run_oos, year):
-            for _nb_scenarios in nb_scenarios:
-                for _admm in admm:
-                    if not _admm and _nb_scenarios > 20:
-                        continue
-                    params = Case.default_params()
-                    params["case"] = Case.mFRR_AND_ENERGY.name
-                    params["run_oos"] = _run_oos
-                    params["year"] = _year
-                    params["one_lambda"] = False
-                    params["admm"] = _admm
-                    params["nb_scenarios_spot"] = _nb_scenarios
-                    params["save_admm_iterations"] = _nb_scenarios
-                    params["gamma"] = 0.5
+        admm = [True, False]
+        for _nb_scenarios in nb_scenarios:
+            for _admm in admm:
+                for gamma in [0.5, 10]:
+                    for _run_oos, _year in zip(run_oos, year):
+                        if not _admm and _nb_scenarios > 20:
+                            continue
+                        params = Case.default_params()
+                        params["case"] = Case.mFRR_AND_ENERGY.name
+                        params["run_oos"] = _run_oos
+                        params["year"] = _year
+                        params["one_lambda"] = False
+                        params["admm"] = _admm
+                        params["nb_scenarios_spot"] = _nb_scenarios
+                        if _admm:
+                            params["save_admm_iterations"] = True
+                            params["gamma"] = gamma
 
-                    partition = params.__repr__()
-                    logger.info(partition, kwargs)
+                        partition = params.__repr__()
+                        logger.info(partition, kwargs)
 
-                    run_optimization(partition, **kwargs)
+                        run_optimization(partition, **kwargs)
 
     def experiment_gamma_admm(self, **kwargs: Any) -> None:
         for gamma in [0.01, 0.1, 0.5, 1.0, 10, 50]:
