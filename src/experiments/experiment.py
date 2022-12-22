@@ -54,6 +54,8 @@ class mFRRExperiment(ETLComponent):
         for _run_oos, _year in zip(run_oos, year):
             for _nb_scenarios in nb_scenarios:
                 for _admm in admm:
+                    if not _admm and _nb_scenarios > 20:
+                        continue
                     params = Case.default_params()
                     params["case"] = Case.mFRR_AND_ENERGY.name
                     params["run_oos"] = _run_oos
