@@ -61,6 +61,8 @@ class mFRRExperiment(ETLComponent):
                     params["one_lambda"] = False
                     params["admm"] = _admm
                     params["nb_scenarios_spot"] = _nb_scenarios
+                    params["save_admm_iterations"] = _nb_scenarios
+                    params["gamma"] = 0.5
 
                     partition = params.__repr__()
                     logger.info(partition, kwargs)
