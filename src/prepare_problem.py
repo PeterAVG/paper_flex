@@ -512,7 +512,7 @@ def sample_lambda_rp(df: pd.DataFrame, size: int, seed: int) -> np.ndarray:
     return lambda_rp_diff_set
 
 
-def get_chunk_instance(
+def get_chunk_instance_old(
     scenarios: Scenario,
     _p_base: Optional[np.ndarray] = None,
 ) -> OptimizationInstance:
@@ -571,6 +571,76 @@ def get_chunk_instance(
         alpha=0.95,
         k=0,
         epsilon=6.477,
+        temperature_filter=temperature_filter,
+        mask=mask,
+        t_c_data=t_air,
+        elafgift=0.0,
+        moms=0.0,
+        tariff=np.zeros(24),
+        one_lambda=True,
+        M=15,
+        max_lambda_bid=5,
+    )
+
+
+def get_chunk_instance(
+    scenarios: Scenario,
+    _p_base: Optional[np.ndarray] = None,
+) -> OptimizationInstance:
+    # prepare training instance using chunk data, i.e., an average day
+    df = pd.read_csv("data/chunk2.csv")
+    df_agg = df.groupby("Hour").mean()
+    setpoint = -18.5
+
+    tc_meas = df[TMP_COLS].values[:, BUS].reshape(-1, 1)
+    od_meas = (df[OD_COLS].values / 100)[:, BUS].reshape(-1, 1)
+    eta = 3
+    R_eta_steady_state = (df.room_temp.values - setpoint) / (
+        df.Po_ss.values * np.mean(od_meas) / NB_BUS * eta
+    )
+    day_filter = ((df.Hour.values >= 6) & (df.Hour.values <= 22)).astype(int)
+    night_filter = 1 - day_filter
+    r_ci = R_eta_steady_state * (day_filter * 1.996 + night_filter * 1.977)
+    p_base = df_agg.Pt.values / NB_BUS
+    p_nom = max(p_base) * 2
+    p_min = 0
+    n_steps = 24 * 4
+    dt = 0.25
+    ti = df.room_temp.values
+    t_air = tc_meas.reshape(-1)
+    temperature_filter = (np.diff(t_air, prepend=0) > 4).astype(int)
+    mask = np.zeros(24)
+    ix = np.floor(np.where(temperature_filter == 1)[0] / 4).astype(int)
+    mask[ix] = 1
+    setpoint_ts = t_air
+
+    return OptimizationInstance(
+        lambda_mfrr=scenarios.lambda_mfrr,
+        lambda_rp=scenarios.lambda_rp,
+        lambda_spot=scenarios.lambda_spot,
+        up_regulation_event=scenarios.up_regulation_event,
+        probabilities=scenarios.prob,
+        c_f=6.552,
+        r_cf=5.010,
+        c_c=0.077,
+        r_ci=r_ci,
+        t_i=ti,
+        od=od_meas.reshape(-1),
+        eta=1.561,
+        p_nom=p_nom,
+        p_min=p_min,
+        p_base=_p_base if _p_base is not None else p_base,
+        delta_max=50,
+        dt=dt,
+        n_steps=n_steps,
+        max_up_time=5,
+        min_up_time=1,
+        setpoint=setpoint,
+        setpoint_ts=setpoint_ts,
+        rebound=4,
+        alpha=0.95,
+        k=0,
+        epsilon=3.372,
         temperature_filter=temperature_filter,
         mask=mask,
         t_c_data=t_air,
