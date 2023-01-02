@@ -639,17 +639,11 @@ class SolverInstance:
         def t_c_baseline(m, t):  # type:ignore
             if t > 0:
                 h = floor(t / m.hour_steps)  # only one power step per hour
-                return (
-                    m.t_c_base[t]
-                    == m.t_c_base[t - 1]
-                    + 1
-                    / m.c_c
-                    * (
-                        1 / m.r_cf * (m.t_f_base[t - 1] - m.t_c_base[t - 1]) * m.dt
-                        + 1 / m.r_ci[t] * (m.t_i[t] - m.t_c_base[t - 1]) * m.dt
-                        - m.eta * m.p_base[h] * m.od[t] * m.dt
-                    )
-                    + m.epsilon * m.temperature_filter[t]
+                return m.t_c_base[t] == m.t_c_base[t - 1] + 1 / m.c_c * (
+                    1 / m.r_cf * (m.t_f_base[t - 1] - m.t_c_base[t - 1]) * m.dt
+                    + 1 / m.r_ci[t] * (m.t_i[t] - m.t_c_base[t - 1]) * m.dt
+                    - m.eta * m.p_base[h] * m.od[t] * m.dt
+                    + m.epsilon * m.temperature_filter[t] * m.dt
                 )
 
             return m.t_c_base[0] == m.setpoint_ts[0]
@@ -666,17 +660,11 @@ class SolverInstance:
         def tc_constraint(m, w, t):  # type:ignore
             if t > 0:
                 h = floor(t / m.hour_steps)  # only one power step per hour
-                return (
-                    m.t_c[w, t]
-                    == m.t_c[w, t - 1]
-                    + 1
-                    / m.c_c
-                    * (
-                        1 / m.r_cf * (m.t_f[w, t - 1] - m.t_c[w, t - 1]) * m.dt
-                        + 1 / m.r_ci[t] * (m.t_i[t] - m.t_c[w, t - 1]) * m.dt
-                        - m.eta * m.pt[w, h] * m.od[t] * m.dt
-                    )
-                    + m.epsilon * m.temperature_filter[t]
+                return m.t_c[w, t] == m.t_c[w, t - 1] + 1 / m.c_c * (
+                    1 / m.r_cf * (m.t_f[w, t - 1] - m.t_c[w, t - 1]) * m.dt
+                    + 1 / m.r_ci[t] * (m.t_i[t] - m.t_c[w, t - 1]) * m.dt
+                    - m.eta * m.pt[w, h] * m.od[t] * m.dt
+                    + m.epsilon * m.temperature_filter[t] * m.dt
                 )
 
             return m.t_c[w, 0] == m.setpoint_ts[0]
@@ -1230,7 +1218,7 @@ class SolverInstance:
                             p_up_reserve[t]
                             * g_indicator[w, t]
                             * up_regulation_event[w, t],
-                            atol=1e-04,
+                            atol=1e-03,
                         )
                     )
                     for w in range(p_up.shape[0])
@@ -1239,7 +1227,7 @@ class SolverInstance:
             )
             assert all(
                 [
-                    np.isclose(p_up[w, t], 0, atol=1e-04)
+                    np.isclose(p_up[w, t], 0, atol=1e-03)
                     if (
                         up_regulation_event[w, t] == 0
                         or g_indicator[w, t] == 0

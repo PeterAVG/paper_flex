@@ -50,33 +50,37 @@ class mFRRExperiment(ETLComponent):
         nb_scenarios = [1, 5, 10, 20, 30, 40, 50, 100, 250]
         year = [2021, 2022]
         run_oos = [False, True]
-        admm = [False, True]
-        for _run_oos, _year in zip(run_oos, year):
-            for _nb_scenarios in nb_scenarios:
-                for _admm in admm:
-                    params = Case.default_params()
-                    params["case"] = Case.mFRR_AND_ENERGY.name
-                    params["run_oos"] = _run_oos
-                    params["year"] = _year
-                    params["one_lambda"] = False
-                    params["admm"] = _admm
-                    params["nb_scenarios_spot"] = _nb_scenarios
+        admm = [True, False]
+        for _nb_scenarios in nb_scenarios:
+            for _admm in admm:
+                for gamma in [0.5, 10]:
+                    for _run_oos, _year in zip(run_oos, year):
+                        if not _admm and _nb_scenarios > 20:
+                            continue
+                        params = Case.default_params()
+                        params["case"] = Case.mFRR_AND_ENERGY.name
+                        params["run_oos"] = _run_oos
+                        params["year"] = _year
+                        params["one_lambda"] = False
+                        params["admm"] = _admm
+                        params["nb_scenarios_spot"] = _nb_scenarios
+                        if _admm and not _run_oos:
+                            params["save_admm_iterations"] = True
+                            params["gamma"] = gamma
 
-                    partition = params.__repr__()
-                    logger.info(partition, kwargs)
+                        partition = params.__repr__()
+                        logger.info(partition, kwargs)
 
-                    run_optimization(partition, **kwargs)
+                        run_optimization(partition, **kwargs)
 
     def experiment_gamma_admm(self, **kwargs: Any) -> None:
         for gamma in [0.01, 0.1, 0.5, 1.0, 10, 50]:
+            # NOTE: order of keys in dict matters a lot here
             params = {
-                "elafgift": 0.0,
-                "moms": 0.0,
-                "delta_max": 50,
-                "analysis": "analysis1",
+                **Case.default_params(),
                 "case": "mFRR_AND_ENERGY",
-                "year": 2021,
                 "run_oos": False,
+                "year": 2021,
                 "one_lambda": False,
                 "admm": True,
                 "nb_scenarios_spot": 5,
