@@ -21,7 +21,7 @@ ta = df.room_temp.values
 t_air = tc_meas.reshape(-1)
 temperature_filter = (np.diff(t_air, prepend=0) > 4).astype(int)
 
-print(R_eta_steady_state * (day_filter * 1.246 + night_filter * 1.5))
+# print(R_eta_steady_state * (day_filter * 1.246 + night_filter * 1.5))
 
 pd.DataFrame(
     {

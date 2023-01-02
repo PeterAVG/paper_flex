@@ -149,3 +149,6 @@ tex/figures/*.fdb_latexmk
 tex/figures/*.pdf
 tex/figures/*.synctex.gz
 tex/figures/*.fls
+
+# old cache
+src/experiments/cache/cache_old.pkl

@@ -75,14 +75,12 @@ class mFRRExperiment(ETLComponent):
 
     def experiment_gamma_admm(self, **kwargs: Any) -> None:
         for gamma in [0.01, 0.1, 0.5, 1.0, 10, 50]:
+            # NOTE: order of keys in dict matters a lot here
             params = {
-                "elafgift": 0.0,
-                "moms": 0.0,
-                "delta_max": 50,
-                "analysis": "analysis1",
+                **Case.default_params(),
                 "case": "mFRR_AND_ENERGY",
-                "year": 2021,
                 "run_oos": False,
+                "year": 2021,
                 "one_lambda": False,
                 "admm": True,
                 "nb_scenarios_spot": 5,

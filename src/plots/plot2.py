@@ -42,7 +42,6 @@ def plot_spot_case_result() -> None:
     params["run_oos"] = False
     params["year"] = 2021
     params["one_lambda"] = False  # does not make sense for spot. Delete
-    params["nb_scenarios_spot"] = 10  # does not make sense for spot. Delete
 
     information, _ = cache[params.__repr__()]
 
@@ -86,7 +85,7 @@ def plot_spot_case_result() -> None:
     ax[2].set_xlabel("Time [h]")
 
     # plt.rcParams.update({"font.size": 14})
-    _set_font_size(ax)
+    _set_font_size(ax, legend=20)
 
     plt.savefig("tex/figures/spot_single_case", dpi=300)
 
@@ -173,7 +172,7 @@ def plot_mFRR_case_result() -> None:
     ax[3].set_ylabel("Price [DKK/kWh]")
     ax[3].set_xlabel("Time [h]")
     # plt.rcParams.update({"font.size": 20})
-    _set_font_size(ax)
+    _set_font_size(ax, legend=20)
 
     plt.savefig("tex/figures/mFRR_single_case", dpi=300)
 
@@ -247,7 +246,7 @@ def plot_analysis2() -> None:
     # prepare boxplot of lambda_b
     _ = ax[1].boxplot(data, positions=delta2)
 
-    # _set_font_size(ax)
+    # _set_font_size(ax, legend=20)
 
     plt.savefig("tex/figures/analysis2_plots.png", dpi=300)
     plt.show()
@@ -258,15 +257,16 @@ def admm_vs_normal_solution() -> None:
 
     def verify(params: Dict[str, Any]) -> bool:
         return (
-            params["run_oos"] is False
+            params.get("run_oos", False) is False
             and Case.mFRR_AND_ENERGY.name in params["case"]
             and params["analysis"] == "analysis1"
             and params["year"] == 2021
             and params["one_lambda"] is False
             and params["nb_scenarios_spot"] in [5, 10]
+            and params.get("gamma", -1) in [-1, 10]
         )
 
-    all_params = [deepcopy(p) for p in Case.cases() if verify(p)]
+    all_params = [deepcopy(eval(p)) for p, _ in cache.items() if verify(eval(p))]
 
     assert len(all_params) == 4, "We expect 4 results"
 
@@ -275,8 +275,8 @@ def admm_vs_normal_solution() -> None:
             {
                 "admm": p["admm"],
                 "nb": p["nb_scenarios_spot"],
-                "info": cache[p.__repr__()][0],
-                "result": cache[p.__repr__()][1],
+                "info": cache[p.__repr__()][-2],
+                "result": cache[p.__repr__()][-1],
             }
             for p in all_params
         ]
@@ -318,7 +318,12 @@ def admm_vs_normal_solution() -> None:
     print(f"Normal ({nb}): {lambda_beta_normal}")
 
     def verify2(params: Dict[str, Any]) -> bool:
-        return params.get("save_admm_iterations") is not None
+        return (
+            params.get("save_admm_iterations") is not None
+            and params["admm"]
+            and params["nb_scenarios_spot"] == 5
+            and not params.get("run_oos", False)
+        )
 
     gamma_experiments = [(eval(p), v) for p, v in cache.items() if verify2(eval(p))]
     gamma_experiments = sorted(gamma_experiments, key=lambda x: x[0]["gamma"])
@@ -351,7 +356,7 @@ def admm_vs_normal_solution() -> None:
     ax.set_xlabel("# ADMM iterations")
     ax.set_ylabel("Total cost [DKK]")
     ax.legend(loc="best")
-    _set_font_size(ax)
+    _set_font_size(ax, legend=20)
     plt.savefig("tex/figures/admm_vs_normal_solution.png", dpi=300)
 
 
@@ -391,9 +396,8 @@ def admm_scenarios() -> None:
             and Case.mFRR_AND_ENERGY.name in params["case"]
             and (params["year"] == 2021 if not oos else params["year"] == 2022)
             and params["one_lambda"] is False
-            and not params.get("save_admm_iterations")
-            and not params.get("gamma")
             and params["admm"]
+            and params["gamma"] == 0.5
         )
 
     is_admm_experiments = [
@@ -415,7 +419,7 @@ def admm_scenarios() -> None:
 
     fig, ax = plt.subplots(1, 1, figsize=(12, 9))
     is_nb = [p["nb_scenarios_spot"] for p, _ in is_admm_experiments]
-    is_total_cost = [v[1].total_cost for _, v in is_admm_experiments]
+    is_total_cost = [v[-1].total_cost for _, v in is_admm_experiments]
     oos_nb = [p["nb_scenarios_spot"] for p, _ in oos_admm_experiments]
     oos_total_cost = [
         v[1].total_cost
@@ -424,7 +428,7 @@ def admm_scenarios() -> None:
         for _, v in oos_admm_experiments
     ]
 
-    is_base_cost = [v[1].base_cost_today for _, v in is_admm_experiments]
+    is_base_cost = [v[-1].base_cost_today for _, v in is_admm_experiments]
     oos_base_cost = [
         v[1].base_cost_today
         if not isinstance(v[1], list)
@@ -470,13 +474,17 @@ def admm_scenarios() -> None:
     ax.set_xlabel("# training scenarios")
     ax.set_ylabel("Total cost [DKK]")
     ax.legend(loc="best")
-    _set_font_size(ax)
+    _set_font_size(ax, legend=20)
     plt.savefig("tex/figures/admm_nb_scenarios_effect.png", dpi=300)
 
 
 def receding_horizon_scenarios() -> None:
     def verify(params: Dict[str, Any]) -> bool:
-        return params["analysis"] == "analysis3" and params.get("lookback")
+        return (
+            params["analysis"] == "analysis3"
+            and params.get("lookback")
+            and params["lookback"] == 5
+        )
 
     def verify_admm(params: Dict[str, Any], nb: int) -> bool:
         return (
@@ -485,14 +493,15 @@ def receding_horizon_scenarios() -> None:
             and Case.mFRR_AND_ENERGY.name in params["case"]
             and params["year"] == 2022
             and params["one_lambda"] is False
-            and not params.get("save_admm_iterations")
-            and not params.get("gamma")
             and params["admm"]
             and params["nb_scenarios_spot"] == nb
+            and params["gamma"] == 0.5
         )
 
     cache = load_cache()
-    experiments = [(eval(p), v) for p, v in cache.items() if verify(eval(p))][0]
+    _lookbacks = [(eval(p), v) for p, v in cache.items() if verify(eval(p))]
+    assert len(_lookbacks) == 1, "We expect only one experiment (lookback)"
+    experiments = _lookbacks[0]
 
     is_cost = [v.total_cost for v in experiments[1][0]]
     oos_cost = [v.total_cost for v in experiments[1][1]]
@@ -509,8 +518,7 @@ def receding_horizon_scenarios() -> None:
             and params.get("run_oos") is True
             and Case.SPOT.name in params["case"]
             and params["year"] == 2022
-            and not params.get("save_admm_iterations")
-            and not params.get("gamma")
+            and not params.get("gamma", False)
         )
 
     _spot = [(eval(p), v) for p, v in cache.items() if verify_spot(eval(p))]
@@ -563,7 +571,7 @@ def receding_horizon_scenarios() -> None:
     ax.set_ylabel("Cumulative cost [DKK]")
     ax.legend(loc="best")
     ax.xaxis.set_tick_params(rotation=45)
-    _set_font_size(ax)
+    _set_font_size(ax, legend=20)
     plt.savefig("tex/figures/cumulative_cost_comparison.png", dpi=300)
     plt.show()
 
@@ -574,8 +582,8 @@ def main() -> None:
     if True:
         admm_vs_normal_solution()
         admm_scenarios()
-        # receding_horizon_scenarios()
-    if False:
+        receding_horizon_scenarios()
+    if True:
         plot_spot_case_result()
         plot_mFRR_case_result()
 

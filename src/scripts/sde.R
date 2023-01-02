@@ -72,37 +72,38 @@ acf(X$residuals, lag.max = 6 * 12, main = "Residuals ACF")
 cpgram(X$residuals, main = "Cumulated periodogram")
 
 ## Plot the auto-correlation function and cumulated periodogram in a new window
-# par(mfrow=c(1,2), mar=c(3,3.5,1,1),mgp=c(2,0.7,0))
-# require(gtable)
-# require(ggplot2)
-# ## The blue lines indicates the 95 confidence interval, meaning that if it is
-# ## white noise, then approximately 1 out of 20 lag correlations will be slightly outside
-# # tiff("test.tiff", units = "in", width = 5, height = 5, res = 300)
-# bacf <- acf(X$residuals, lag.max = 6 * 12, plot = FALSE)
-# bacfdf <- with(bacf, data.frame(lag, acf))
-# q <- ggplot(data = bacfdf, mapping = aes(x = lag, y = acf)) +
-#   geom_hline(aes(yintercept = 0)) +
-#   geom_segment(mapping = aes(xend = lag, yend = 0)) +
-#   theme(text = element_text(size = 15))
-# g1 <- ggplotGrob(q)
-# cp <- ggcpgram(X$residuals) + theme(text = element_text(size = 15))
-# g2 <- ggplotGrob(cp)
-# # plot(X$t, X$residuals, xlab="residuals", ylab="", type="n")
-# # lines(X$t, X$residuals)
-# g <- gtable:::cbind_gtable(g1, g2, "min")
-# panels <- g$layout$t[grep("panel", g$layout$name)]
-# g$heights[panels] <- unit(c(8, 8), "cm")
-# grid.newpage()
-# grid.draw(g)
-# # dev.copy(png, filename = "../paper_flex/tex/figures/2ndFreezerModelValidation.png")
-# dev.off()
-# ##
-# par(mfrow = c(1, 1))
-# plot(X$t, X$yTc, xlab = "Time.", ylab = "Temperature", type = "n") # , ylim=c(-20,20))
-# lines(X$t, X$yTc)
-# lines(X$t, X$TcHat, col = 2)
-# # lines(X$t, X$bs4, col=3)
-# legend("bottomright", c("Measured", "Predicted"), col = 1:2, lty = 1)
+par(mfrow = c(1, 2), mar = c(3, 3.5, 0.1, 0.1))
+require(gtable)
+require(ggplot2)
+## The blue lines indicates the 95 confidence interval, meaning that if it is
+## white noise, then approximately 1 out of 20 lag correlations will be slightly outside
+# tiff("tex/figures/test.tiff", units = "in", width = 5, height = 5, res = 300)
+png(filename = "tex/figures/2ndFreezerModelValidation.png", units = "in", width = 5, height = 2.6, res = 300)
+bacf <- acf(X$residuals, lag.max = 6 * 12, plot = FALSE)
+bacfdf <- with(bacf, data.frame(lag, acf))
+q <- ggplot(data = bacfdf, mapping = aes(x = lag, y = acf)) +
+  geom_hline(aes(yintercept = 0)) +
+  geom_segment(mapping = aes(xend = lag, yend = 0)) +
+  theme(text = element_text(size = 15))
+g1 <- ggplotGrob(q)
+cp <- ggcpgram(X$residuals) + theme(text = element_text(size = 15))
+g2 <- ggplotGrob(cp)
+# plot(X$t, X$residuals, xlab="residuals", ylab="", type="n")
+# lines(X$t, X$residuals)
+g <- gtable:::cbind_gtable(g1, g2, "min")
+panels <- g$layout$t[grep("panel", g$layout$name)]
+g$heights[panels] <- unit(c(5, 5), "cm")
+grid.newpage()
+grid.draw(g)
+# dev.copy(png, filename = "tex/figures/2ndFreezerModelValidation.png")
+dev.off()
+##
+par(mfrow = c(1, 1))
+plot(X$t, X$yTc, xlab = "Time.", ylab = "Temperature", type = "n") # , ylim=c(-20,20))
+lines(X$t, X$yTc)
+lines(X$t, X$TcHat, col = 2)
+# lines(X$t, X$bs4, col=3)
+legend("bottomright", c("Measured", "Predicted"), col = 1:2, lty = 1)
 
 # ##
 # par(mfrow = c(1, 1))
