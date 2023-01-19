@@ -1,11 +1,11 @@
 
 \section{Results and Discussion}\label{sec:results}
 
-In this section, we present and discuss the results related to providing mFRR versus load shifting for a single supermarket freezer using the optimization model in (\ref{P1:compact_model}), and the scenarios and solution strategies described in Section \ref{sec:scenario_generation} and \ref{sec:solution_strategy}. First, we discuss the main result: mFRR versus load shifting. Second, we discuss the effectiveness of the ADMM solution strategy.
+In this section, we present and discuss the results related to providing mFRR versus load shifting for a single supermarket freezer using the optimization model in (\ref{P1:compact_model}), and the scenarios and solution strategies described in Section \ref{sec:scenario_generation} and \ref{sec:mFRR_bidding_implementation}. First, we discuss the main result: mFRR versus load shifting. Second, we discuss the effectiveness of the ADMM solution strategy using 2021 price data.
 
 \subsection{Load shifting vs mFRR}
 
-Figure \ref{fig:cumulative_cost_comparison} shows the cumulative cost for mFRR versus load shifting compared to the baseline cost. For mFRR, the lookback strategy is similar to training on 2021 data. But both of them have a higher cost than load shifting for most of the year. Interestingly, mFRR was very profitable in June where reservation prices increased significantly due to an outage of a reserve power plant.
+Figure \ref{fig:cumulative_cost_comparison} shows the cumulative cost for mFRR versus load shifting compared to the baseline cost. For mFRR, the lookback strategy is similar to ADMM strategy using 2021 scenarios. But both of them have a higher cost than load shifting for most of the year. Interestingly, mFRR was very profitable in June (reservation prices increased significantly due to an outage of a reserve power plant).
 
 \begin{figure}[!t]
     \centering
@@ -14,7 +14,7 @@ Figure \ref{fig:cumulative_cost_comparison} shows the cumulative cost for mFRR v
     \label{fig:cumulative_cost_comparison}
 \end{figure}
 
-Table \ref{tab:cases_compared} breaks down the cost components. For mFRR, there is big difference between the lookback strategy and mFRR trained on 2021 data. The lookback strategy earns much more from activation payments, but is also penalized more as it is not able to deliver its reservation capacity in some days. The other mFRR strategy bids more conservatively and is only rarely activated. All strategies are better than the baseline costs, i.e., not utilizing flexibility, with savings of 10-14\%.
+Table \ref{tab:cases_compared} breaks down the cost components. For mFRR, there is big difference between the lookback strategy and the ADMM strategy with 2021 prices. The lookback strategy earns much more from activation payments, but is also penalized more as it is not able to deliver its reservation capacity in some days. The other mFRR strategy bids more conservatively and is only rarely activated. All strategies are better than the baseline costs, i.e., not utilizing flexibility, with savings of 10-14\%.
 
 \begin{flushleft}
     \begin{table}[!t]
@@ -33,7 +33,7 @@ Table \ref{tab:cases_compared} breaks down the cost components. For mFRR, there 
             Act payment          & 8.092          & 0.0    & 2.161  \\
             Penalty cost         & 5.741          & 0.0    & 0.516  \\
             Scenarios            & -5             & 1      & 50     \\
-            Admm                 & False          & False  & True   \\
+            ADMM                 & False          & False  & True   \\
             \% savings           & 11.6           & 13.9   & 10.1   \\
             \bottomrule
         \end{tabular}
@@ -53,20 +53,24 @@ In Figure \ref{fig:fig_sim}, load shifting and mFRR are compared for the same da
     \label{fig:fig_sim}
 \end{figure*}
 
-The results show some interesting features of mFRR and load shifting. For load shifting, although the savings are higher, they are directly proportional to the energy shifted and therefore the temperature deviation in the freezer. For mFRR, this is not the case due to the mechanism of reservation and activation.
+The results show some interesting features of mFRR and load shifting. Although the savings are higher for load shifting, they are directly proportional to the energy shifted and therefore the temperature deviation in the freezer. For mFRR, this is not the case due to the mechanism of reservation and activation.
 
 Furthermore, settlement costs of the BRP for load shifting were ignored as this reflects the reality of selfish, flexible consumers acting in their own interest. In reality, the BRP would have to pay for the settlement costs or at least buy/sell energy in the intraday market after the day-ahead market clearing and load shifting schedule. But consumers are not necessarily aware of the balance settlement and the electricity market mechanisms. Hence, they have a strong incentive to use their flexibility for load shifting. Some industrial and commercial consumers might not be exposed fully to the spot price, and for those consumers, load shifting is less profitable, but they will still have an incentive to change their deal with the retailer to get full exposure.
 
 For mFRR, it was implicitly assumed that all revenue from reservation and payments go to the flexible consumer. But this neglect the fact that the BRP requires a share of the revenue. Furthermore, there might be an aggregator or technology provider facilitating the aggregation and communication of the flexibility. In this case, the they would also want a share of the revenue. This can potentially reduce the revenue of the consumer significantly and is one of the main challenges of achieving widespread penetration of demand-side flexibility \cite{gade2022ecosystem}.
 
-For these reasons, load shifting seems more appealing for a flexible consumer compared to mFRR from a monetary point of view. This finding illustrates the importance of designing attractive markets for mFRR if demand-side flexibility is to be used more widely, and perhaps also to disincentivize load shifting flexible consumers as it could lead to system imbalances.
+As mentioned, a single freezer or supermarket must be part of a larger portfolio through an aggregator in order to participate in mFRR. Such an aggregated portfolio has some issues that are neglected here, such as baseline estimation for verification of the demand response, allocation of profits within the portfolio, and accurate capacity estimation of the whole portfolio that bid into mFRR.
+
+Furthermore, mFRR is changing from a 60-min market to a 15-min market in the next few years \cite{MARI}. This makes it more feasible for TCLs to participate given their sensitivity to large temperature deviations.
+
+Nevertheless, load shifting seems more appealing for a flexible consumer compared to mFRR from a monetary point of view. This finding illustrates the importance of designing attractive markets for mFRR if demand-side flexibility is to be used more widely, and perhaps also to disincentivize load shifting flexible consumers as it could lead to system imbalances.
 
 
 \subsection{ADMM}
 
-Figure \ref{fig:admm_vs_normal_solution} shows the ADMM convergence to the optimal solution for five scenarios for different step sizes. For most step sizes, it converges quickly but never quite reaches the optimal solution. This is mainly because the algorithm has to achieve consensus on three variables, $p_{h,\omega}^{r,\uparrow}$, $\alpha_{\omega}$, and $\beta_{\omega}$. Experiments showed that it was much closer to the optimal solution when removing $\alpha_{\omega}$, and $\beta_{\omega}$.
+Figure \ref{fig:admm_vs_normal_solution} shows the ADMM convergence to the optimal solution for five scenarios for different step sizes. For most step sizes, it converges quickly but never quite reaches the optimal solution. This is mainly because the algorithm has to achieve consensus on three variables, $p_{h,\omega}^{r,\uparrow}$, $\alpha_{\omega}$, and $\beta_{\omega}$. Experiments showed that it was converging much closer to the optimal solution when removing $\alpha_{\omega}$, and $\beta_{\omega}$.
 
-A large step size emphasizes the need to reach consensus whereas a small step size prioritizes the normal objective function in (\ref{P1:eq1}). Here, it seems a step size of $\gamma \geq 10$ is more stable and converges quickly.
+A large step size emphasizes the need to reach consensus whereas a small step size prioritizes the objective function in (\ref{P1:eq1}). Here, it seems a step size of $\gamma \geq 1$ is more stable and converges quickly.
 
 \begin{figure}[!t]
     \centering
@@ -75,7 +79,7 @@ A large step size emphasizes the need to reach consensus whereas a small step si
     \label{fig:admm_vs_normal_solution}
 \end{figure}
 
-Figure \ref{fig:admm_nb_scenarios_effect} shows the effect of including more scenarios in Problem (\ref{P1:compact_model}) using ADMM to solve it for both IS training and OOS evaluation. For IS training, good solution are already obtained with 10 scenarios, and the same applies for OOS although it seems using 250 scenarios also performs well.
+Figure \ref{fig:admm_nb_scenarios_effect} shows the effect of including more scenarios in Problem (\ref{P1:compact_model}) using ADMM to solve it. For IS, good solutions are already obtained with 5-10 scenarios, and the same applies for OOS although it seems using 250 scenarios also performs well.
 
 The plot highlights the importance of choosing representative scenarios, especially balancing prices as they determine how much activation is needed, and therefore the bid policy.
 

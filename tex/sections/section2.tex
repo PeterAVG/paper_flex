@@ -14,14 +14,14 @@ The rest of the section is organized as follows. First, we visualize the measure
 
 %In this paper, data from a single freezer operating in a large Danish supermarket is used as a case study. In Figure \ref{fig:chunk}, the air temperature and opening degree of the freezer is shown together with the electric power of the variable-speed compressor rack for a single day. All values correspond to 15-min averages. Temperature fluctuates around its setpoint at -18 $^{\circ}$C with the exception of hour 7-8, where defrosting is scheduled. While defrosting, a heating element is briefly turned on, and the expansion valve is closed such that the flow of refrigerant stops. Afterwards, while recovering the temperature, the expansion valve is fully opened. The power consumption of the compressor rack, scaled to one freezer, is shown in the bottom plot. Power consumption is highest during opening hours, and it is lowest during closing hours. During opening hours, food is being replaced and customers open the display case constantly. Furthermore, most supermarkets put additional insulation on the display cases during closing hours which reduces thermal losses. For these reasons, there are effectively two regimes for a supermarket freezer plus a short defrosting regime.
 
-In this paper, data from a single freezer operating in a large Danish supermarket is used as a case study. 
+In this paper, data from a single freezer operating in a large Danish supermarket is used as a case study.
 In Figure \ref{fig:chunk}, the top plot shows 15-min average air temperature of the freezer, while the middle plot shows the opening degree of the valve.
 Temperature fluctuates around its setpoint at -18 $^{\circ}$C with the exception of hour 7-8, where defrosting is scheduled.
-While defrosting, a heating element is briefly turned on, and the expansion valve is closed such that the flow of refrigerant stops. Afterwards, while recovering the temperature, the expansion valve is fully opened. 
-The electric power of the variable-speed compressor rack, scaled to one freezer\footnote{Since temperature dynamics are similar for all freezers, homogeneity is assumed. Hence, equal consumption is assumed for all freezers.}, is shown in the bottom plot. 
-Consumption is highest during opening hours, and it is lowest during closing hours. 
-During opening hours, food is being replaced and customers open the display case constantly. 
-Furthermore, most supermarkets put additional insulation on the display cases during closing hours which reduces thermal losses. 
+While defrosting, a heating element is briefly turned on, and the expansion valve is closed such that the flow of refrigerant stops. Afterwards, while recovering the temperature, the expansion valve is fully opened.
+The electric power of the variable-speed compressor rack, scaled to one freezer\footnote{Since temperature dynamics are similar for all freezers, homogeneity is assumed. Hence, equal consumption is assumed for all freezers.}, is shown in the bottom plot.
+Consumption is highest during opening hours, and it is lowest during closing hours.
+During opening hours, food is being replaced and customers open the display case constantly.
+Furthermore, most supermarkets put additional insulation on the display cases during closing hours which reduces thermal losses.
 For these reasons, there are effectively two regimes for a supermarket freezer plus a short defrosting regime.
 \begin{figure}[!t]
     \centering
@@ -32,7 +32,7 @@ For these reasons, there are effectively two regimes for a supermarket freezer p
 
 \subsubsection{Thermal modelling of freezer}
 
-In \cite{hao2014aggregate}, it is described how a simple TCL model can be made. We extend it to a second-order model that accounts for the thermal mass of the food, which essentially provides the flexibility in freezers:
+In \cite{hao2014aggregate}, it is described how a simple TCL model can be made. We extend it to a second-order state-space model that accounts for the thermal mass of the food, which essentially provides the flexibility in freezers:
 
 \begin{subequations}\label{eq:2ndFreezerStateSpace}
     \begin{align}
@@ -53,19 +53,19 @@ Using the R library CTSM-R \cite{juhl2016ctsmr}, the parameters in (\ref{eq:2ndF
     \centering
     \begin{tabular}[b]{|l|l|l|}
         \hline
-        Parameter       & Value & Unit            \\ \hhline{|=|=|=|}
-        $C^f$           & 6.552  & kWh/$^{\circ}$C \\
-        $C^c$           & 0.077  & kWh/$^{\circ}$C \\
-        $R^{cf}$        & 5.010  & $^{\circ}$C/kW  \\
-        $R^{ci, \text{day}}$   & 41.05  & $^{\circ}$C/kW  \\
-        $R^{ci, \text{night}}$ & 61.25  & $^{\circ}$C/kW  \\
-        $\eta$          & 1.561  &                 \\
-        $\epsilon$      & 3.372 & $^{\circ}$C/h   \\ \hline
+        Parameter              & Value & Unit            \\ \hhline{|=|=|=|}
+        $C^f$                  & 6.552 & kWh/$^{\circ}$C \\
+        $C^c$                  & 0.077 & kWh/$^{\circ}$C \\
+        $R^{cf}$               & 5.010 & $^{\circ}$C/kW  \\
+        $R^{ci, \text{day}}$   & 41.05 & $^{\circ}$C/kW  \\
+        $R^{ci, \text{night}}$ & 61.25 & $^{\circ}$C/kW  \\
+        $\eta$                 & 1.561 &                 \\
+        $\epsilon$             & 3.372 & $^{\circ}$C/h   \\ \hline
     \end{tabular}
 \end{table}
 
 
-The one-step residuals for the air temperature should ideally resemble white noise in order for a model to capture all dynamics seen in the data \cite{madsen2007time}. Figure \ref{fig:2ndFreezerModelValidation} shows the auto-correlation and cumulative periodogram of the residuals. The autocorrelation shows two significant lags for lag two and seven, but looks good otherwise. Likewise, in the periodogram it seems the model is able to capture most dynamics at all frequencies. 
+The one-step residuals for the air temperature should ideally resemble white noise in order for a model to capture all dynamics seen in the data \cite{madsen2007time}. Figure \ref{fig:2ndFreezerModelValidation} shows the auto-correlation and cumulative periodogram of the residuals. The autocorrelation shows two significant lags for lag two and seven, but looks good otherwise. Likewise, in the periodogram it seems the model is able to capture most dynamics at all frequencies.
 
 \begin{figure}[!t]
     \centering
@@ -76,7 +76,7 @@ The one-step residuals for the air temperature should ideally resemble white noi
 
 Since there are only 96 time-steps, the defrosting period can result in relatively large residuals as it is difficult to capture such fast, transient dynamics. Since up-regulation is not allowed during defrosting, the residuals are not too important during that period. To decrease their effect in the parameter estimation procedure, the term $ \epsilon \mathbbm{1}^{\text{df}}_{t}$ was added to (\ref{eq:2ndFreezerStateSpace}) (see implementation details in code \cite{}).
 
-Furthermore, Figure \ref{fig:2ndFreezerModelSimulation} (left) shows a 24-hour simulation of model (\ref{eq:2ndFreezerStateSpace}). It is seen that the simulation is very reasonable and closely follows the measured air temperature. Such a visual validation is important because the model will be embedded in an optimization model (cf. Section \ref{sec:OptimizationModel}). 
+Furthermore, Figure \ref{fig:2ndFreezerModelSimulation} (left) shows a 24-hour simulation of model (\ref{eq:2ndFreezerStateSpace}). It is seen that the simulation is very reasonable and closely follows the measured air temperature. Such a visual validation is important because the model will be embedded in an optimization model (cf. Section \ref{sec:OptimizationModel}).
 
 It is also important to note that ideally the validation of (\ref{eq:2ndFreezerStateSpace}) would also include real measurements from the air and food temperature in a freezer during demand response events. However, by adhering to the fundamental physics governing the temperature dynamics as shown, the model is trusted to be accurate during demand response events too. It brings an intuitive interpretation which can be used to understand the consequence to the temperature during a demand response event.
 
@@ -133,7 +133,7 @@ The savings from load shifting are directly proportional to the volume and price
     \text{Load shifting savings} = \sum_{h=1}^{24} \lambda^{s}_{h} p^{\text{Base}}_{h} - \lambda^{s}_{h} p^{\prime}_{h}
 \end{equation}
 
-where $p_{h}$ is the power profile during load shifting, $p^{\text{Base}}_{h}$ is the normal baseline power, and $\lambda^{s}_{h}$ is the spot price. 
+where $p_{h}$ is the power profile during load shifting, $p^{\text{Base}}_{h}$ is the normal baseline power, and $\lambda^{s}_{h}$ is the spot price.
 
 However, since the load shifting action only occurs \textit{after} the day-ahead market clearing (cf. Figure \ref{fig:timeline_mfrr}), the BRP has already bought $\lambda^{s}_{h} p^{\text{Base}}_{h}$ and any deviation results in an imbalance for the BRP. In this work, we look at the case where flexible demand acts selfishly and excludes the BRP from its load shifting action. Therefore, the objective function for the flexible demand is simply:
 

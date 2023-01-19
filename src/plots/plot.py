@@ -6,25 +6,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+from src.common.utils import _set_font_size
+from src.prepare_problem import NB_BUS
+
 sns.set_theme()
 sns.set(font_scale=1.5)
-
-
-def _set_font_size(ax: Any, misc: int = 26, legend: int = 14) -> None:
-    try:
-        _ = len(ax)
-    except TypeError:
-        ax = [ax]
-    for _ax in ax:
-        for item in (
-            [_ax.title, _ax.xaxis.label, _ax.yaxis.label]
-            + _ax.get_xticklabels()
-            + _ax.get_yticklabels()
-        ):
-            item.set_fontsize(misc)
-    for _ax in ax:
-        for item in _ax.get_legend().get_texts():
-            item.set_fontsize(legend)
 
 
 df = pd.read_csv("data/chunk2.csv")
@@ -40,10 +26,13 @@ ax1.step(df["t"], df[tmp], "b-", label="Air temperature")
 ax1.set_ylabel("Temperature [°C]")
 ax2.step(df["t"], df[od], "r-", label="Opening degree")
 ax2.set_ylabel("OD [%]")
-ax3.step(df["t"], df["Pt"], "g-", label="Power")
+ax3.step(df["t"], df["Pt"] / NB_BUS, "g-", label="Power")
 ax3.set_ylabel("Pt [kW]")
 ax3.set_xlabel("Time [h]")
 ax3.set_xlim((0, 24))
+ax1.get_yaxis().set_label_coords(-0.1, 0.5)
+ax2.get_yaxis().set_label_coords(-0.1, 0.5)
+ax3.get_yaxis().set_label_coords(-0.1, 0.5)
 ax1.legend()
 ax2.legend()
 ax3.legend()

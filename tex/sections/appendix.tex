@@ -1,34 +1,158 @@
 {\appendices
+
 \section*{Appendix A}\label{appendix:A}
 % \addcontentsline{toc}{section}{Appendices}
 % \renewcommand{\thesubsection}{\Alph{subsection}}
 % \subsection{Appendix}\label{appendix:A}
 
-Hao et al. \cite{hao2014aggregate} describes how a TCL can be modelled as a virtual battery using a first-order thermal-electric ODE:
+\subsection{Final model formulation}\label{sec:final_model}
 
-\begin{align}\label{eq:hao}
-    \frac{dT(t)}{dt} = \frac{1}{C}\left( \frac{1}{R}(T^{a}(t) - T(t)) + \eta P(t) \right)
+% Describe objective function for mFRR and load shifting.
+
+% The set, $\Psi$, then contains all the optimization variables:
+
+% \begin{align}\label{set:OptVariables}
+%     \Psi = \{p_{h,\omega}, p^{r, \uparrow}_{h}, & s_{h,\omega}, p^{b, \uparrow}_{h,\omega}, p^{b, \downarrow}_{h,\omega}, u^{\uparrow}_{h,\omega}, y^{\uparrow}_{h,\omega}, z^{\uparrow}_{h,\omega}, u^{\downarrow}_{h,\omega}, y^{\downarrow}_{h,\omega}, z^{\downarrow}_{h,\omega}, \notag \\ & T^{f}_{\omega, t}, T^{c}_{\omega, t}, T^{f,B}_{t}, T^{c, B}_{t}, \lambda_{h}^{bid}, \phi_{h,\omega}, g_{h,\omega}, \Delta \}
+% \end{align}
+
+The final optimization model is a two-stage stochastic MILP and is described in full detail in the following. First, all auxillary variables and constraints are presented. Second, constraints related to the power consumption for the freezer is shown. Third, the physical constraints for the temperatures are presented. Lastly, the rebound constraints are presented.
+
+
+\subsubsection{Auxillary variables and constraints}\label{sec:aux_constraints}
+
+First, we describe the necessary auxillary variables and constraints to identify when up- and down-regulation occurs compared to the baseline power, $P^{\text{Base}}_{h}$. This is required since the costs and revenues from up-regulation and rebound must be determined explicitly. We therefore introduce the following six binary variables \cite{morales2013integrating}:
+\\
+\begin{itemize}
+    \item $u^{\uparrow}_{h,\omega} \in \{0,1\}$ equal to 1 when starting to deliver up-regulation
+    \item $y^{\uparrow}_{h,\omega} \in \{0,1\}$ equal to 1 during up-regulation
+    \item $z^{\uparrow}_{h,\omega} \in \{0,1\}$ equal to 1 when to stopping up-regulation
+    \item $u^{\downarrow}_{h,\omega} \in \{0,1\}$ equal to 1 when starting to deliver down-regulation
+    \item $y^{\downarrow}_{h,\omega} \in \{0,1\}$ equal to 1 during down-regulation
+    \item $z^{\downarrow}_{h,\omega} \in \{0,1\}$ equal to 1 when to stopping down-regulation
+\end{itemize}
+
+\noindent The following constraints implements the logic:
+
+\begin{subequations}\label{eq:auxillary_constraints}
+    \begin{align}
+        u_{h-1,\omega}^{\uparrow} - u_{h,\omega}^{\uparrow} + y_{h,\omega}^{\uparrow} - z_{h,\omega}^{\uparrow} = 0 \quad         & \forall{\omega}, \forall{h} = \{2 \ldots 24 \} \\
+        y_{h,\omega}^{\uparrow} + z_{h,\omega}^{\uparrow} \leq 1 \quad                                                            & \forall{h,\omega}                              \\
+        u_{h-1,\omega}^{\downarrow} - u_{h,\omega}^{\downarrow} + y_{h,\omega}^{\downarrow} - z_{h,\omega}^{\downarrow} = 0 \quad & \forall{\omega}, \forall{h} = \{2 \ldots 24 \} \\
+        y_{h,\omega}^{\downarrow} + z_{h,\omega}^{\downarrow} \leq 1 \quad                                                        & \forall{h,\omega}                              \\
+        u_{h,\omega}^{\uparrow} + u_{h,\omega}^{\downarrow} \leq 1 \quad                                                          & \forall{h,\omega}                              \\
+        y_{h,\omega}^{\uparrow} + y_{h,\omega}^{\downarrow} \leq 1 \quad                                                          & \forall{h,\omega}                              \\
+        z_{h,\omega}^{\uparrow} + z_{h,\omega}^{\downarrow} \leq 1 \quad                                                          & \forall{h,\omega}
+    \end{align}
+\end{subequations}
+
+\subsubsection{Power constraints}\label{sec:power_constraints}
+
+The power consumption of the freezer is constrained by:
+
+\begin{subequations}\label{eq:power_constraints}
+    \begin{align}
+        p_{h,\omega} = P^{\text{Base}}_{h} - p^{b, \uparrow}_{h,\omega} + p^{b, \downarrow}_{h,\omega}, \quad                                                                                          & \forall{h,\omega}                                                                             \label{con_power:subeq1}  \\
+        p^{r, \uparrow}_h \leq P^{\text{Base}}_h, \quad                                                                                                                                                & \forall{h}                                                                                     \label{con_power:subeq2} \\
+        p^{b, \uparrow}_{h,\omega} \leq p^{r, \uparrow}_h \mathbbm{1}_{h,\omega}^{\lambda^{b}_{h,\omega} > \lambda^{s}_{h}} , \quad                                                                    & \forall{h,\omega}                                                                             \label{con_power:subeq3}  \\
+        p^{b, \uparrow}_{h,\omega} \leq u_{h,\omega}^{\uparrow} (P^{\text{Base}}_{h} - P^{Min}) , \quad                                                                                                & \forall{h,\omega}                                                                             \label{con_power:subeq4}  \\
+        p^{b, \downarrow}_{h,\omega} \leq u^{\downarrow}_{h,\omega} (P^{\text{Nom}} -P^{\text{Base}}_{h}), \quad                                                                                       & \forall{h,\omega}                                                                             \label{con_power:subeq5}  \\
+        P^{Min} \leq p_{h,\omega} \leq P^{\text{Nom}}, \quad                                                                                                                                           & \forall{h,\omega}                                                                             \label{con_power:subeq6}  \\
+        0 \leq s_{h,\omega} \leq P^{\text{Base}}_{h}, \quad                                                                                                                                            & \forall{h,\omega}                                                                             \label{con_power:subeq7}  \\
+        p^{b, \uparrow}_{h,\omega} + s_{h,\omega} \geq p^{r,\uparrow}_{h} \cdot \mathbbm{1}_{h,\omega}^{(\lambda^{bid}_{h} < \lambda^{b}_{h,\omega}, \lambda^{b}_{h,\omega} > \lambda^{s}_{h})}, \quad & \forall{h,\omega} \label{con_power:subeq8}                                                                              \\
+        p^{b, \downarrow}_{h,\omega} \geq 0.10 \cdot u^{\downarrow}_{h,\omega} (P^{\text{Nom}} - P^{\text{Base}}_{h}), \quad                                                                           & \forall{h,\omega}                                                                             \label{con_power:subeq9}  \\
+        p^{r, \uparrow}_{h} \leq P^{\text{Base}}_{h} (1 - \mathbbm{1}_{h}^{df}), \quad                                                                                                                 & \forall{h} \label{con_power:subeq10}
+    \end{align}
+\end{subequations}
+
+Constraint (\ref{con_power:subeq1}) sets the power equal to the baseline power unless there is up- or down-regulation. Constraint (\ref{con_power:subeq2}) bounds the reservation power to the baseline power. Constraint (\ref{con_power:subeq3}) ensures that up-regulation is zero when the system does not need it, and at the same time bounds it to the reservation power. Constraint (\ref{con_power:subeq4}) ensures that up-regulation is 0 whenever $u^{\uparrow}_{h,\omega} = 0$, and otherwise bounded to the maximum power that can be upregulated. Constraint (\ref{con_power:subeq5}) works the same way for down-regulation. Constraint (\ref{con_power:subeq6}) bounds the power to be between the minimum and nominal power. Constraint (\ref{con_power:subeq7}) bounds the slack variable which is the energy not delivered as promised. Constraint (\ref{con_power:subeq8}) is the bi-linear constraint from (\ref{eq:bid_constraint}). Constraint (\ref{con_power:subeq9}) ensures that down-regulation is equal to at least 10\% of the down-regulation capacity. Lastly, constraint (\ref{con_power:subeq10}) prohibits any up-regulation when defrosting occurs.
+
+\subsubsection{Physical constraints}\label{sec:temperature_constraints}
+
+The state-space model in (\ref{eq:2ndFreezerStateSpace}) is simply added as constraints with $p_{t,\omega}$ being the power of the freezer and an additional index for each scenario, $\omega$.
+
+Note, the freezer specific variables are indexed by $t$, representing a time step $dt = 0.25$ whereas all other variables are indexed by hour $h$.
+
+Furthermore, there is a set of identical constraints to (\ref{eq:2ndFreezerStateSpace}) that simulates the baseline temperatures, $T^{f,B}_{t}$ and $T^{c,B}_{t}$, using the baseline power, $P^{Base}_{h}$. These are used for the following boundary constraint, as well as the rebound constraints in Section \ref{sec:rebound_constraints}.
+
+\begin{align}\label{eq:boundary_constraint}
+    T^{f}_{96,\omega} \leq T^{f, \text{Base}}_{96}, \quad \forall{\omega}
 \end{align}
 
-Here, $T(t)$ is the temperature, $C$ is the thermal capacitance (kWh/$^{\circ}$C), $R$ is the thermal resistance ($^{\circ}$C/kW), $\eta$ is the coefficient of performance (COP), i.e., the cooling/heating effect, $P(t)$ is the power to the TCL, and $T^{a}(t)$ is the ambient temperature outside the TCL (typically around 20 $^{\circ}$C in an indoor environment).
+The boundary constraint in (\ref{eq:boundary_constraint}) ensures that the optimization does not exploit the end state.
 
-Note, (\ref{eq:hao}) can readily be formulated in a deterministic, state-space model as in (\ref{eq:sde1}). The following difference equation yields the Euler approximation of (\ref{eq:hao}) which can be used in an optimization model (with the same time step $dt$):
+Temperature constraints to the air temperature can easily be added to limit the flexibility of the TCL by introducing a maximum temperature difference to the baseline temperature, $\Delta^{\text{max}}$:
 
-\begin{align}\label{eq:hao_discretized}
-    T_{t+1} = T_t + dt\cdot \left( \frac{1}{C}\left( \frac{1}{R}(T^{a}_t - T_t) + \eta P_t \right)  \right)
+\begin{subequations}\label{eq:delta_max_constraints}
+    \begin{align}
+        T^{c,\text{Base}}_{t} - \Delta \leq T^{c}_{t, \omega}, \quad & \forall{t, \omega} \\
+        T^{c,\text{Base}}_{t} - \Delta \geq T^{c}_{t, \omega}, \quad & \forall{t, \omega} \\
+        \Delta \leq \Delta^{\text{max}}
+    \end{align}
+\end{subequations}
+
+\subsubsection{Rebound constraints}\label{sec:rebound_constraints}
+
+The rebound constraints ensures that a rebound happens right after an up-regulation by down-regulating:
+
+\begin{subequations}\label{eq:rebound_constraints_1}
+    \begin{align}
+        y^{\downarrow}_{h, \omega} \geq z^{\uparrow}_{h, \omega}, \quad & \forall{h, \omega} \\
+        y^{\downarrow}_{h, \omega} \leq z^{\uparrow}_{h, \omega}, \quad & \forall{h, \omega}
+    \end{align}
+\end{subequations}
+
+
+Furthermore, the following rebound constraints ensures that the rebound will take place until the food temperature is equal to the baseline food temperature, which can be considered the setpoint food temperature:
+
+\begin{subequations}\label{eq:rebound_constraints_2}
+    \begin{align}
+        \sum_{t=4\cdot(h-1)}^{4 h} T^{f}_{t, \omega} - T^{f, \text{Base}}_{t} \geq - (1 - z^{\downarrow}_{h, \omega}) \cdot M, \quad & \forall{\omega}, \forall{h} \\
+        \sum_{t=4\cdot(h-1)}^{4 h} T^{f}_{t, \omega} - T^{f, \text{Base}}_{t} \leq - (1 - z^{\downarrow}_{h, \omega}) \cdot M, \quad & \forall{\omega}, \forall{h}
+    \end{align}
+\end{subequations}
+
+In constraints (\ref{eq:rebound_constraints_2}), $M$ is a sufficiently big number such that the food temperature is allowed to deviate from the baseline.
+
+Lastly, the following constraint ensures that up-regulation happens before down-regulation:
+
+\begin{align}\label{eq:up_regulation_first}
+    \sum_{k=0}^{h} y^{\downarrow}_{\omega, k} \leq y^{\uparrow}_{\omega, k}, \quad \forall{h, \omega}
 \end{align}
 
-Eq. (\ref{eq:hao}) and (\ref{eq:hao_discretized}) constitutes the most simple model of a TCL one can imagine, but, nevertheless, has a quite powerful interpretation: the rate of change of temperature is determined by the heat flux to the surrounding environment and the heat flux from the power source to the TCL. It thus captures the most fundamental temperature dynamics of a TCL.
+This makes sense since it is not possible (or at least difficult) to anticipate potential up-regulation events in the power grid. As such, it does not make sense to pre-cool (or pre-heat) a TCL in the context of mFRR.
 
-The steady-state power in (\ref{eq:hao}) is given by:
 
-\begin{align}\label{eq:hao_ss}
-    P^{ss}(t) = \frac{T^{a}(t) - T(t)}{\eta R}
-\end{align}
+% \section*{Appendix A}\label{appendix:A}
+% % \addcontentsline{toc}{section}{Appendices}
+% % \renewcommand{\thesubsection}{\Alph{subsection}}
+% % \subsection{Appendix}\label{appendix:A}
 
-The steady-state power is thus the power required to keep the temperature of the TCL constant with respect to the outside temperature, $T^{a}(t)$, given the efficiency of the system and the thermal resistance. A better energy efficiency can be achieved by either 1) increasing the mechanical efficiency of the cooling/heating system or 2) increasing the thermal resistance to the outside temperature by, e.g., insulating a freezer.
+% Hao et al. \cite{hao2014aggregate} describes how a TCL can be modelled as a virtual battery using a first-order thermal-electric ODE:
 
-The drawback of the first-order model in (\ref{eq:hao}) is that it is only parameterized by three parameters, and it excludes disturbances. Hence, it might not be an accurate model of a real system. The model can easily be extended to include more complicated dynamics such as heat exchange with a barrier between $T^{a}(t)$ and $T(t)$, additional disturbance terms (e.g., when a fridge is opened), hourly values of $C$ and $R$, etc. Nevertheless, (\ref{eq:hao}) serves as a good starting point for a simple TCL model.
+% \begin{align}\label{eq:hao}
+%     \frac{dT(t)}{dt} = \frac{1}{C}\left( \frac{1}{R}(T^{a}(t) - T(t)) + \eta P(t) \right)
+% \end{align}
 
-\section*{Appendix B}\label{appendix:B}
-Appendix two text goes here.}
+% Here, $T(t)$ is the temperature, $C$ is the thermal capacitance (kWh/$^{\circ}$C), $R$ is the thermal resistance ($^{\circ}$C/kW), $\eta$ is the coefficient of performance (COP), i.e., the cooling/heating effect, $P(t)$ is the power to the TCL, and $T^{a}(t)$ is the ambient temperature outside the TCL (typically around 20 $^{\circ}$C in an indoor environment).
+
+% Note, (\ref{eq:hao}) can readily be formulated in a deterministic, state-space model as in (\ref{eq:sde1}). The following difference equation yields the Euler approximation of (\ref{eq:hao}) which can be used in an optimization model (with the same time step $dt$):
+
+% \begin{align}\label{eq:hao_discretized}
+%     T_{t+1} = T_t + dt\cdot \left( \frac{1}{C}\left( \frac{1}{R}(T^{a}_t - T_t) + \eta P_t \right)  \right)
+% \end{align}
+
+% Eq. (\ref{eq:hao}) and (\ref{eq:hao_discretized}) constitutes the most simple model of a TCL one can imagine, but, nevertheless, has a quite powerful interpretation: the rate of change of temperature is determined by the heat flux to the surrounding environment and the heat flux from the power source to the TCL. It thus captures the most fundamental temperature dynamics of a TCL.
+
+% The steady-state power in (\ref{eq:hao}) is given by:
+
+% \begin{align}\label{eq:hao_ss}
+%     P^{ss}(t) = \frac{T^{a}(t) - T(t)}{\eta R}
+% \end{align}
+
+% The steady-state power is thus the power required to keep the temperature of the TCL constant with respect to the outside temperature, $T^{a}(t)$, given the efficiency of the system and the thermal resistance. A better energy efficiency can be achieved by either 1) increasing the mechanical efficiency of the cooling/heating system or 2) increasing the thermal resistance to the outside temperature by, e.g., insulating a freezer.
+
+% The drawback of the first-order model in (\ref{eq:hao}) is that it is only parameterized by three parameters, and it excludes disturbances. Hence, it might not be an accurate model of a real system. The model can easily be extended to include more complicated dynamics such as heat exchange with a barrier between $T^{a}(t)$ and $T(t)$, additional disturbance terms (e.g., when a fridge is opened), hourly values of $C$ and $R$, etc. Nevertheless, (\ref{eq:hao}) serves as a good starting point for a simple TCL model.
+
+% \section*{Appendix B}\label{appendix:B}
+% Appendix two text goes here.
+}

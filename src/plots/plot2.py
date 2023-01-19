@@ -8,30 +8,14 @@ import numpy as np
 import seaborn as sns
 
 from src.base import Case
+from src.common.utils import _set_font_size
 from src.evaluation import average_opt_results
-from src.experiment_manager.cache import EXPERIMENT_FOLDER, load_cache
+from src.experiment_manager.cache import load_cache
 
 # matplotlib.pyplot.ion()
 
 sns.set_theme()
 sns.set(font_scale=1.5)
-
-
-def _set_font_size(ax: Any, misc: int = 26, legend: int = 14) -> None:
-    try:
-        _ = len(ax)
-    except TypeError:
-        ax = [ax]
-    for _ax in ax:
-        for item in (
-            [_ax.title, _ax.xaxis.label, _ax.yaxis.label]
-            + _ax.get_xticklabels()
-            + _ax.get_yticklabels()
-        ):
-            item.set_fontsize(misc)
-    for _ax in ax:
-        for item in _ax.get_legend().get_texts():
-            item.set_fontsize(legend)
 
 
 def plot_spot_case_result() -> None:
@@ -571,7 +555,7 @@ def receding_horizon_scenarios() -> None:
     ax.set_ylabel("Cumulative cost [DKK]")
     ax.legend(loc="best")
     ax.xaxis.set_tick_params(rotation=45)
-    _set_font_size(ax, legend=20)
+    _set_font_size(ax, legend=32)
     plt.savefig("tex/figures/cumulative_cost_comparison.png", dpi=300)
     plt.show()
 
@@ -580,10 +564,10 @@ def receding_horizon_scenarios() -> None:
 
 def main() -> None:
     if True:
-        admm_vs_normal_solution()
-        admm_scenarios()
+        # admm_vs_normal_solution()
+        # admm_scenarios()
         receding_horizon_scenarios()
-    if True:
+    if False:
         plot_spot_case_result()
         plot_mFRR_case_result()
 
