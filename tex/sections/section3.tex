@@ -1,12 +1,10 @@
 \section{Optimization model and solution strategy}\label{sec:OptimizationModel}
 
-In this section, the optimization problem is presented. First, the time sequence of decision variables for mFRR is presented. Second, we explain how scenarios for price data are generated for in-sample (IS) training and out-of-sample (OOS) evaluation. Third, we present the compact model formulation. Fourth, we present the two solution strategies for mFRR, including the mFRR bidding policy and scenario decomposition. Finally, we present the full model formulation.
+In this section, the optimization problem is presented. First, the time sequence of decisions for participation in mFRR is presented. Second, we explain how scenarios for price data are generated for in-sample (IS) training and out-of-sample (OOS) evaluation. Third, we present the compact model formulation. Fourth, we present the two solution strategies for mFRR, including the mFRR bidding policy and scenario decomposition. Finally, we present the full model formulation.
 
 \subsection{Time sequence for decision making}
 
-Figure \ref{fig:timeline_mfrr_variables} shows the stages for making decisions in the mFRR market. First, a reservation bid, $p_{h}^{r,\uparrow}$ is submitted. For any reservation bid accepted, a regulating power bid must be submitted, $\lambda_{h,\omega}^{\text{bid}}$. The reservation and bid are the \textit{first-stage} decisions. The set $\Gamma_{\omega}$, contains all real-time variables in the optimization problem and are the \textit{second-stage} decisions. They control the real-time power, auxillary variables for identifying up- and down-regulation\footnote{Down-regulation refers to the rebound action in this context.}, temperature dynamics, and when to deliver up-regulation according to the bid. For more details, see Section \ref{sec:final_model}. The index, $\omega$, specifies a scenario.
-
-
+Figure \ref{fig:timeline_mfrr_variables} shows the stages for making decisions in the mFRR market. First, a reservation bid $p_{h}^{r,\uparrow}$ is submitted. For any reservation bid accepted, a regulating power bid must be submitted, $\lambda_{h,\omega}^{\text{bid}}$. The reservation and bid are the \textit{first-stage} decisions. The set $\Gamma_{\omega}$ contains all real-time variables in the optimization problem and are the \textit{second-stage} decisions. They control the real-time power, auxiliary variables for identifying up- and down-regulation\footnote{Down-regulation refers to the rebound action in this context.}, temperature dynamics, and when to deliver up-regulation according to the bid. For more details, see Section \ref{sec:final_model}. Index $\omega$ specifies a scenario.
 % \begin{figure}[!t]\label{fig:timeline_mfrr_variables}
 %     \centering
 %     \includegraphics[width=\columnwidth]{../figures/timeline_mfrr_variables.png}
@@ -29,7 +27,7 @@ To train the optimization model to get a policy for $p_{h}^{r,\uparrow}$ and $\l
     \item Training IS using a lookback of five days
 \end{enumerate}
 
-In both cases, balancing prices, $\lambda_{h}^{b}$, are sampled from days where up-regulation happened 1 $\ldots$ 24 hours  with equal probability. In this way, there is emphasis on days and hours where up-regulation happened, and the model should learn a policy taking this into account.
+In both cases, balancing prices, $\lambda_{h}^{b}$, are sampled from days where up-regulation happened 0 $\ldots$ 24 hours with equal probability. In this way, days where up-regulation happened are essentially up-sampled. The reason for this approach is that the model learns more when up-regulation happens than when it does not.
 
 For spot prices, the lookback strategy uses the spot price from the past five days to take advantage of any autocorrelation. The first strategy samples spot price days in 2021. For both strategies, evaluation is done OOS on unseen 2022 price data.
 
@@ -58,7 +56,7 @@ For mFRR, the objective function in (\ref{eq:mFRRObjective}) corresponds to $f$ 
 
 \subsection{Solution strategy}\label{sec:solution_strategy}
 
-To solve Problem (\ref{P1:compact_model}), we first need to specify a bidding policy that can readily be used OOS. We do so by choosing an affine bidding policy. It is then shown how the bidding policy is implemented using McCormick relaxation. Finally, it shown how to solve (\ref{P1:compact_model}) for many scenarios using decomposition.
+To solve Problem (\ref{P1:compact_model}), we first need to specify a bidding policy that can readily be used OOS. We do so by choosing an affine bidding policy. It is then shown how the bidding policy is implemented using McCormick relaxation. Finally, it is shown how to solve (\ref{P1:compact_model}) for many scenarios using decomposition.
 
 \subsubsection{Affine bidding policy}
 
@@ -67,6 +65,7 @@ A bidding policy needs to be easy to follow OOS for the trader. We choose an aff
 \begin{subequations}\label{eq:affine_policy}
     \begin{align}
         \lambda^{bid}_{h,\omega} & = \alpha \lambda_{h,\omega}^{s,\text{diff}} + \beta + \lambda_{h,\omega}^{s}, \quad \forall{\omega}, \forall{h} \in \{1\ldots23\}\label{affine_policy:1} \\
+        \lambda_{h,\omega}^{s,\text{diff}} &= \lambda_{h+1,\omega}^{s} - \lambda_{h,\omega}^{s}, \quad \forall{\omega}, \forall{h} \in \{1\ldots23\}\label{affine_policy:1_2} \\
         \alpha                   & \geq 0\label{affine_policy:2}                                                                                                                            \\
         \beta                    & \geq 0\label{affine_policy:3}
     \end{align}
