@@ -1,3 +1,4 @@
+import argparse
 from abc import ABCMeta
 from argparse import ArgumentParser
 from typing import List
@@ -30,7 +31,10 @@ class ETLComponent(metaclass=BaseETLComponent):
 
     @classmethod
     def add_arguments(cls, parser: ArgumentParser) -> None:
-        parser.add_argument("--dry-run", default=False, action="store_true")
-        parser.add_argument("--append", default=True, action="store_true")
-        parser.add_argument("--overwrite", default=False, action="store_true")
+        parser.add_argument(
+            "--dry-run", default=False, action=argparse.BooleanOptionalAction
+        )
+        parser.add_argument(
+            "--overwrite", default=False, action=argparse.BooleanOptionalAction
+        )
         parser.add_argument("callable", choices=cls().get_choices())

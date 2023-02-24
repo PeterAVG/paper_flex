@@ -80,7 +80,7 @@ Variables $\alpha$ and $\beta$ is then learned IS and fixed for OOS evaluation. 
 As explained in Section \ref{sec:mFRR}, activation of mFRR reservation only happens when certain price conditions are met. This is formalized in the following constraint:
 
 \begin{equation}\label{eq:bid_constraint}
-    p^{b, \uparrow}_{h,\omega} + s_{h,\omega} \geq p^{r,\uparrow}_{h} \cdot \mathbbm{1}_{h,\omega}^{(\lambda^{bid}_{h} < \lambda^{b}_{h,\omega} \land \lambda^{b}_{h,\omega} > \lambda^{s}_{h})}, \quad \forall{h,\omega}
+    p^{b, \uparrow}_{h,\omega} + s_{h,\omega} \geq p^{r,\uparrow}_{h} \cdot \mathbbm{1}_{h,\omega}^{(\lambda^{\text{bid}}_{h} < \lambda^{b}_{h,\omega} \land \lambda^{b}_{h,\omega} > \lambda^{s}_{h})}, \quad \forall{h,\omega}
 \end{equation}
 
 Eq. (\ref{eq:bid_constraint}) shows how real-time up-regulation plus a slack variable must be greater than or equal to the reservation if the bid is lower than the balancing price and if up-regulation is needed in hour $h$. It is a bi-linear constraint so McCormick relaxation \cite{mccormick1976computability} is used to convert (\ref{eq:bid_constraint}) to a linear constraint by introducing auxillary variables, $\phi_{h,\omega}$ and $g_{h,\omega}$:

@@ -151,14 +151,17 @@ def evaluate_oos(
         problem = Problem(generic_solver_instance, chunk_instance)
         Problem.customize_constraints(problem.model_instance, instance.one_lambda)
         problem.set_objective(objective)
+        tee = True if params["analysis"] == "analysis4" else False
 
         if case.name in [Case.mFRR.name, Case.mFRR_AND_ENERGY.name, Case.ROBUST.name]:
-            # only fix policy for mFRR. Spot is always reoptimized, i.e., there is no bid policy
-            fix_model(problem, chunk_instance, deepcopy(params))
+            if params["analysis"] != "analysis4":
+                # only fix policy for mFRR. Spot is always reoptimized, i.e., there is no bid policy
+                # In "analysis4", we solve it with full hindsight each day
+                fix_model(problem, chunk_instance, deepcopy(params))
         elif case.name == Case.NAIVE.name:
             fix_naive_model(problem, chunk_instance)
 
-        opt_result = problem.solve(tee=False)
+        opt_result = problem.solve(tee=tee)
         res_inst = get_variables_and_params(problem.res_instance)
 
         if case.name == Case.SPOT.name:

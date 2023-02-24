@@ -27,7 +27,7 @@ ax1.set_ylabel("Temperature [°C]")
 ax2.step(df["t"], df[od], "r-", label="Opening degree")
 ax2.set_ylabel("OD [%]")
 ax3.step(df["t"], df["Pt"] / NB_BUS, "g-", label="Power")
-ax3.set_ylabel("Pt [kW]")
+ax3.set_ylabel("Power [kW]")
 ax3.set_xlabel("Time [h]")
 ax3.set_xlim((0, 24))
 ax1.get_yaxis().set_label_coords(-0.1, 0.5)
@@ -38,6 +38,7 @@ ax2.legend()
 ax3.legend()
 # save figure to this folder
 _set_font_size([ax1, ax2, ax3], legend=20)
+plt.tight_layout()
 plt.savefig("tex/figures/tmp_od_Pt.png", dpi=300)
 # plt.show()
 
@@ -117,7 +118,7 @@ sns.set_theme()
 sns.set(font_scale=1.5)
 
 tf1, tc1 = simulate(rebound=False, tf_base=np.empty(1))
-fig, ax1 = plt.subplots(1, 2, figsize=(14, 10))
+fig, ax1 = plt.subplots(1, 2, figsize=(14, 10), sharey=True)
 ax1[0].plot(_t, tf1, "b-", label="Sim. food temperature")
 ax1[0].plot(_t, tc1, "r-", label="Sim. air temperature")
 tf2, tc2 = simulate(rebound=True, tf_base=tf1.copy())
@@ -140,15 +141,17 @@ ax1[0].legend(loc="upper right")
 ax1[1].legend()
 # save figure to this folder
 _set_font_size(ax1, legend=20)
+plt.tight_layout()
 plt.savefig("tex/figures/2ndFreezerModelSimulation.png", dpi=300)
 # plt.show()
+
+#%% # noqa
 
 import matplotlib.pyplot as plt  # noqa
 import pandas as pd  # noqa
 import seaborn as sns  # noqa
 from matplotlib.ticker import MaxNLocator  # noqa
 
-#%% # noqa
 ######### PLOT CHUNK SCENARIOS #########
 from src.prepare_problem import build_uncertainty_set_v2  # noqa
 

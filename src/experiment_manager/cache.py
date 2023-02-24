@@ -47,7 +47,6 @@ def cache(func: Callable) -> Callable:
         partition = args[0]
 
         dry_run = kwargs["dry_run"]
-        append = kwargs["append"]
         overwrite = kwargs["overwrite"]
 
         if dry_run:
@@ -56,7 +55,12 @@ def cache(func: Callable) -> Callable:
             save_to_cache(func.cache, dry_run=True)  # type:ignore
             return result
         else:
-            if append:
+            if overwrite:
+                # run partition and save to cache
+                func.cache[partition] = result = func(partition)  # type:ignore
+                save_to_cache(func.cache)  # type:ignore
+                return result
+            else:
                 # run partition only if not present in cache, otherwise, return cache
                 if func.cache.get(partition) is not None:  # type:ignore
                     return func.cache[partition]  # type:ignore
@@ -66,12 +70,5 @@ def cache(func: Callable) -> Callable:
                     )  # type:ignore
                     save_to_cache(func.cache)  # type:ignore
                     return result
-            elif overwrite:
-                # run partition and save to cache
-                func.cache[partition] = result = func(partition)  # type:ignore
-                save_to_cache(func.cache)  # type:ignore
-                return result
-            else:
-                raise Exception("Not implemented")
 
     return wrapper

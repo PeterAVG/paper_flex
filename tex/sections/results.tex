@@ -5,16 +5,18 @@ In this section, we present and discuss the results related to providing mFRR ve
 
 \subsection{Load shifting vs mFRR}
 
-Figure \ref{fig:cumulative_cost_comparison} shows the cumulative cost for mFRR versus load shifting compared to the baseline cost. For mFRR, the lookback strategy is similar to ADMM strategy using 2021 scenarios. But both of them have a higher cost than load shifting for most of the year. Interestingly, mFRR was very profitable in June (reservation prices increased significantly due to an outage of a reserve power plant).
+Figure \ref{fig:cumulative_cost_comparison} shows the cumulative cost of operation for mFRR versus load shifting compared to the baseline cost. For mFRR, the lookback strategy is similar to ADMM strategy using 2021 scenarios. But both of them have a higher cost than load shifting for most of the year. Interestingly, mFRR was very profitable in June (reservation prices increased significantly due to an outage of a reserve power plant).
 
 \begin{figure}[!t]
     \centering
     \includegraphics[width=\columnwidth]{../figures/cumulative_cost_comparison.png}
-    \caption{OOS cumulative cost for load shifting and mFRR using ADMM with 50 scenarios trained on 2021 data (blue), and a lookback of five days (red).}
+    \caption{OOS cumulative cost of operation for load shifting and mFRR using ADMM with 50 scenarios trained on 2021 data (blue), and a lookback of five days (red). Base costs are also shown together with an oracle that has full hindsight on prices.}
     \label{fig:cumulative_cost_comparison}
 \end{figure}
 
-Table \ref{tab:cases_compared} breaks down the cost components. For mFRR, there is big difference between the lookback strategy and the ADMM strategy with 2021 prices. The lookback strategy earns much more from activation payments, but is also penalized more as it is not able to deliver its reservation capacity in some days. The other mFRR strategy bids more conservatively and is only rarely activated. All strategies are better than the baseline costs, i.e., not utilizing flexibility, with savings of 10-14\%.
+Table \ref{tab:cases_compared} breaks down the cost components. For mFRR, there is big difference between the lookback strategy and the ADMM strategy with 2021 prices. The lookback strategy earns much more from activation payments, but is also penalized more as it is not able to deliver its reservation capacity in some days. The other mFRR strategy bids more conservatively and is only rarely activated. The market rules prescribe that the full bid should be delivered, hence the lookback strategy might be too risky. On the other hand, it was assumed that the activation power should be equal to the reserved power, but the TSO determines the activation power, hence the activation power might be lower in reality which would both decrease the penalty cost and the activation revenue.
+
+All strategies are better than the baseline costs, i.e., not utilizing flexibility, with savings of 10-14\%. Furthermore, the mFRR strategies are not far off the theoretically best mFRR strategy as indicated by the oracle in Figure \ref{fig:cumulative_cost_comparison}.
 
 \begin{flushleft}
     \begin{table}[!t]
@@ -63,7 +65,7 @@ As mentioned, a single freezer or supermarket must be part of a larger portfolio
 
 Furthermore, mFRR is changing from a 60-min market to a 15-min market in the next few years \cite{MARI}. This makes it more feasible for TCLs to participate given their sensitivity to large temperature deviations.
 
-Nevertheless, load shifting seems more appealing for a flexible consumer compared to mFRR from a monetary point of view. This finding illustrates the importance of designing attractive markets for mFRR if demand-side flexibility is to be used more widely, and perhaps also to disincentivize load shifting flexible consumers as it could lead to system imbalances.
+Nevertheless, load shifting seems more appealing for a flexible consumer compared to mFRR from a monetary point of view. This finding illustrates the importance of designing attractive markets for mFRR if demand-side flexibility is to be used more widely, and perhaps also to disincentivize load shifting for flexible consumers as it could lead to system imbalances.
 
 
 \subsection{ADMM}

@@ -26,7 +26,7 @@ For these reasons, there are effectively two regimes for a supermarket freezer p
 \begin{figure}[!t]
     \centering
     \includegraphics[width=\columnwidth]{../figures/tmp_od_Pt.png}
-    \caption{\textbf{Top}: temperature of a single freezer in a supermarket. \textbf{Middle}: opening degree of the freezer expansion valve. \textbf{Bottom}: power of the compressor rack feeding a single freezer.}
+    \caption{\textbf{Top}: temperature of a single freezer in a supermarket. \textbf{Middle}: opening degree of the freezer expansion valve. \textbf{Bottom}: electric power of the compressor rack feeding a single freezer.}
     \label{fig:chunk}
 \end{figure}
 
@@ -41,7 +41,7 @@ In \cite{hao2014aggregate}, it is described how a simple TCL model can be made. 
     \end{align}
 \end{subequations}
 
-Here, $T^c$ is the air temperature in the freezer which is measured, and $T^f$ is the food temperature which is a latent, unobserved state. It is essentially a low-pass filter of the air temperature in the freezer with time constant $\tau = C^f R^{cf}$. $C^f$ and $C^c$ are the thermal capacitance of the food and air in the freezer, respectively. $R^{cf}$ and $R^{ci}$ are the thermal resistance between food and air in the freezer, and air and indoor temperature, respectively. Furthermore, $\epsilon$ represents the temperature change when defrosting and $\mathbbm{1}^{\textbf{df}}_{t}$ is the indicator function for when defrosting happens. $R^{ci}$ is either one of two values, $R^{ci, \text{day}}$ and $R^{ci, \text{night}}$, to capture the differences between opening hours (6 am to 10 pm) and closing hours (10 pm to 6 am). The opening degree, $OD_t$, and power $P_t$, are exogenous inputs as the opening degree is assumed to be fixed during a demand-response event, while only $P_t$ is controllable. $\eta$ is the compressor efficiency which resembles the coefficient of performance (COP). The model is discretized with a time step of 15 minutes, i.e. $dt = 0.25$ hours.
+Here, $T^c$ is the air temperature in the freezer which is measured, and $T^f$ is the food temperature which is a latent, unobserved state. It is essentially a low-pass filter of the air temperature in the freezer with time constant $\tau = C^f R^{cf}$. $C^f$ and $C^c$ are the thermal capacitance of the food and air in the freezer, respectively. $R^{cf}$ and $R^{ci}$ are the thermal resistance between food and air in the freezer, and air and indoor temperature, respectively. Furthermore, $\epsilon$ represents the temperature change when defrosting and $\mathbbm{1}^{\text{df}}_{t}$ is the indicator function for when defrosting happens. $R^{ci}$ is either one of two values, $R^{ci, \text{day}}$ and $R^{ci, \text{night}}$, to capture the differences between opening hours (6 am to 10 pm) and closing hours (10 pm to 6 am). The opening degree, $OD_t$, and power $P_t$, are exogenous inputs as the opening degree is assumed to be fixed during a demand-response event, while only $P_t$ is controllable. $\eta$ is the compressor efficiency which resembles the coefficient of performance (COP). The model is discretized with a time step of 15 minutes, i.e. $dt = 0.25$ hours.
 
 \subsubsection{Model validation}
 
@@ -76,7 +76,7 @@ The one-step residuals for the air temperature should ideally resemble white noi
 
 Since there are only 96 time-steps, the defrosting period can result in relatively large residuals as it is difficult to capture such fast, transient dynamics. Since up-regulation is not allowed during defrosting, the residuals are not too important during that period. To decrease their effect in the parameter estimation procedure, the term $ \epsilon \mathbbm{1}^{\text{df}}_{t}$ was added to (\ref{eq:2ndFreezerStateSpace}) (see implementation details in code \cite{}).
 
-Furthermore, Figure \ref{fig:2ndFreezerModelSimulation} (left) shows a 24-hour simulation of model (\ref{eq:2ndFreezerStateSpace}). It is seen that the simulation is very reasonable and closely follows the measured air temperature. Such a visual validation is important because the model will be embedded in an optimization model (cf. Section \ref{sec:OptimizationModel}).
+Furthermore, Figure \ref{fig:2ndFreezerModelSimulation} (left) shows a 24-hour simulation of model (\ref{eq:2ndFreezerStateSpace}). It is seen that the simulation is very reasonable and closely follows the measured air temperature although a slight bias is seen as the simulated temperature is a bit higher. Such a visual validation is important because the model will be embedded in an optimization model (cf. Section \ref{sec:OptimizationModel}).
 
 It is also important to note that ideally the validation of (\ref{eq:2ndFreezerStateSpace}) would also include real measurements from the air and food temperature in a freezer during demand response events. However, by adhering to the fundamental physics governing the temperature dynamics as shown, the model is trusted to be accurate during demand response events too. It brings an intuitive interpretation which can be used to understand the consequence to the temperature during a demand response event.
 
@@ -94,7 +94,7 @@ In Figure \ref{fig:2ndFreezerModelSimulation} (right), such a simulated example 
 
 Figure \ref{fig:timeline_mfrr} shows the timeline of the mFRR market in Denmark.\footnote{There is only a market for up-regulation.} One should note though, that BRPs can choose \textit{not} to bid in the reserve market and only bid real-time up and down-regulation. In this work, we consider the case where flexible demand delivers reservation through a BRP since payment is received for both reservation and activation. All prices considered are for DK2.\footnote{Denmark has two synchronous areas: DK1 (western part) and DK2 (eastern part).}
 
-First, BRPs can bid reserve capacities in each hour, $p_{h}^{r,\uparrow}$ $\forall{h} \in \{1, \ldots 24 \}$, in the market for the next day, $D$. If accepted, they receive the reservation price, $\lambda_{h}^{r,\uparrow}$. This happens \textit{before} the day-ahead market clearing for which the BRPs buy energy for their expected demand, $P_{h}^{\text{Base}}$, at the spot price, $\lambda_{h}^{s}$. After that, a regulating power bid, $\lambda_{h}^{\text{bid}}$, must be submitted for each hour in $D$ where $p_{h}^{r,\uparrow} > 0$ \cite{energinet:Systemydelser}. In real-time, the reserves are activated if the following conditions hold, depending on the balancing price: $\{p_{h}^{r,\uparrow} > 0 \land \lambda_{h}^{\text{bid}} <  \lambda_{h}^{b} \land \lambda_{h}^{b} > \lambda_{h}^{s} \}$
+First, BRPs can bid reserve capacities in each hour, $p_{h}^{r,\uparrow}$ $\forall{h} \in \{1, \ldots 24 \}$, in the market for the next day, $D$. If accepted, they receive the reservation price, $\lambda_{h}^{r,\uparrow}$. This happens \textit{before} the day-ahead market clearing for which the BRPs buy energy for their expected demand, $P_{h}^{\text{Base}}$, at the spot price, $\lambda_{h}^{s}$. After that, a regulating power bid, $\lambda_{h}^{\text{bid}}$, must be submitted for each hour in $D$ where $p_{h}^{r,\uparrow} > 0$ \cite{energinet:Systemydelser}. In real-time, the reserves are activated if the following conditions hold, i.e., if there is a reservation and if the balancing price is higher than both the spot price and the bid: $\{p_{h}^{r,\uparrow} > 0 \land \lambda_{h}^{\text{bid}} <  \lambda_{h}^{b} \land \lambda_{h}^{b} > \lambda_{h}^{s} \}$
 
 % \begin{figure}[!t]
 %     \centering
@@ -112,7 +112,7 @@ First, BRPs can bid reserve capacities in each hour, $p_{h}^{r,\uparrow}$ $\fora
 \end{figure}
 
 
-If the conditions are met, the BRP receives the balancing price times their actual up-regulation, $p_{h}^{b,\uparrow}$. The BRP also incurs an additional cost due to any subsequent rebound. Furthermore, the BRP incurs a penalty, $s_{h} = \text{max}\{0, p_{h}^{r,\uparrow} - p_{h}^{b,\uparrow}$\}, if they don't deliver their promised reserve.
+If the conditions are met, the BRP receives the balancing price times their actual up-regulation, $p_{h}^{b,\uparrow}$. The BRP also incurs an additional cost due to any subsequent rebound. Furthermore, the BRP incurs a penalty, $s_{h} = \text{max}\{0, p_{h}^{r,\uparrow} - p_{h}^{b,\uparrow}$\}, if they don't deliver their promised reserve.\footnote{In reality, $p_{h}^{b,\uparrow}$ is determined by the TSO, but it is assumed here that a bid is activated in its entirety.}
 
 A suitable objective function for a BRP delivering mFRR up-regulation for one day is therefore:
 
@@ -133,7 +133,7 @@ The savings from load shifting are directly proportional to the volume and price
     \text{Load shifting savings} = \sum_{h=1}^{24} \lambda^{s}_{h} p^{\text{Base}}_{h} - \lambda^{s}_{h} p^{\prime}_{h}
 \end{equation}
 
-where $p_{h}$ is the power profile during load shifting, $p^{\text{Base}}_{h}$ is the normal baseline power, and $\lambda^{s}_{h}$ is the spot price.
+where $p_{h}$ is the power profile during load shifting, $p^{\text{Base}}_{h}$ is the anticipated baseline power, and $\lambda^{s}_{h}$ is the spot price.
 
 However, since the load shifting action only occurs \textit{after} the day-ahead market clearing (cf. Figure \ref{fig:timeline_mfrr}), the BRP has already bought $\lambda^{s}_{h} p^{\text{Base}}_{h}$ and any deviation results in an imbalance for the BRP. In this work, we look at the case where flexible demand acts selfishly and excludes the BRP from its load shifting action. Therefore, the objective function for the flexible demand is simply:
 

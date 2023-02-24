@@ -92,3 +92,18 @@ class mFRRExperiment(ETLComponent):
             logger.info(partition, kwargs)
 
             run_optimization(partition, **kwargs)
+
+    def experiment_oracle(self, **kwargs: Any) -> None:
+        params = Case.default_params()
+        params["analysis"] = "analysis4"
+        params["case"] = Case.mFRR_AND_ENERGY.name
+        params["run_oos"] = True
+        params["year"] = 2022
+        params["one_lambda"] = False
+        params["admm"] = False
+        params["nb_scenarios_spot"] = 1
+
+        partition = params.__repr__()
+        logger.info(partition, kwargs)
+
+        run_optimization(partition, **kwargs)

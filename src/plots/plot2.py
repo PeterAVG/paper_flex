@@ -482,6 +482,9 @@ def receding_horizon_scenarios() -> None:
             and params["gamma"] == 0.5
         )
 
+    def verify_oracle(params: Dict[str, Any]) -> bool:
+        return params["analysis"] == "analysis4"
+
     cache = load_cache()
     _lookbacks = [(eval(p), v) for p, v in cache.items() if verify(eval(p))]
     assert len(_lookbacks) == 1, "We expect only one experiment (lookback)"
@@ -495,6 +498,10 @@ def receding_horizon_scenarios() -> None:
     _admm_nb = [(eval(p), v) for p, v in cache.items() if verify_admm(eval(p), nb)]
     assert len(_admm_nb) == 1, "We expect only one experiment"
     oos_admm_nb = [e.total_cost for e in _admm_nb[0][1][1]]
+
+    oracle = [(eval(p), v) for p, v in cache.items() if verify_oracle(eval(p))]
+    oracle_total_cost = [e.total_cost for e in oracle[0][1][1]]
+    assert len(oracle_total_cost) == len(oos_admm_nb)
 
     def verify_spot(params: Dict[str, Any]) -> bool:
         return (
@@ -512,7 +519,7 @@ def receding_horizon_scenarios() -> None:
     # convert list of integers 'days' to datetimes:
     days = [datetime.datetime(2022, 1, 1) + datetime.timedelta(days=d) for d in days]
 
-    fig, ax = plt.subplots(1, 1, figsize=(14, 14))
+    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
     ax.plot(
         days,
         np.cumsum(oos_cost),
@@ -551,11 +558,20 @@ def receding_horizon_scenarios() -> None:
         linewidth=1.8,
         color="black",
     )
+    ax.plot(
+        days,
+        np.cumsum(oracle_total_cost),
+        label="mFRR oracle",
+        linestyle="--",
+        linewidth=1.2,
+        color="black",
+    )
 
-    ax.set_ylabel("Cumulative cost [DKK]")
+    ax.set_ylabel("Cumulative cost of operation [DKK]")
     ax.legend(loc="best")
     ax.xaxis.set_tick_params(rotation=45)
-    _set_font_size(ax, legend=32)
+    _set_font_size(ax, legend=18)
+    plt.tight_layout()
     plt.savefig("tex/figures/cumulative_cost_comparison.png", dpi=300)
     plt.show()
 
