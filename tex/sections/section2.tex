@@ -78,7 +78,7 @@ Since there are only 96 time-steps, the defrosting period can result in relative
 
 Furthermore, Figure \ref{fig:2ndFreezerModelSimulation} (left) shows a 24-hour simulation of model (\ref{eq:2ndFreezerStateSpace}). It is seen that the simulation is very reasonable and closely follows the measured air temperature although a slight bias is seen as the simulated temperature is a bit higher. Such a visual validation is important because the model will be embedded in an optimization model (cf. Section \ref{sec:OptimizationModel}).
 
-It is also important to note that ideally the validation of (\ref{eq:2ndFreezerStateSpace}) would also include real measurements from the air and food temperature in a freezer during demand response events. However, by adhering to the fundamental physics governing the temperature dynamics as shown, the model is trusted to be accurate during demand response events too. It brings an intuitive interpretation which can be used to understand the consequence to the temperature during a demand response event.
+It is also important to note that ideally the validation of (\ref{eq:2ndFreezerStateSpace}) would also include real measurements from the air and food temperature in a freezer during demand response events. However, by adhering to the fundamental physics governing the temperature dynamics as shown, the model is trusted to be accurate during demand response events too. It brings an intuitive interpretation which can be used to understand the impact on temperature during a demand response event.
 
 In Figure \ref{fig:2ndFreezerModelSimulation} (right), such a simulated example of a demand response event is shown. It can clearly be seen how the air temperature increases when the power is turned off, and how it decreases when the power is turned back on. The food temperature is much more stable and only changes slightly, as expected. The rebound occurs until the food temperature is back to its normal value.
 
@@ -117,7 +117,8 @@ If the conditions are met, the BRP receives the balancing price times their actu
 A suitable objective function for a BRP delivering mFRR up-regulation for one day is therefore:
 
 \begin{align}\label{eq:mFRRObjective}
-     & \underbrace{C(\text{cost})}_{\text{mFRR}} = - \underbrace{\sum_{h=1}^{24} \lambda^{s}_{h}P^{\text{Base}}_{h}}_{\textrm{Energy cost}} + \underbrace{\sum_{h=1}^{24}\lambda_{h}^{r} p^{r, \uparrow}_{h}}_{\textrm{Reservation payment}}  \notag \\ & \quad \quad + \underbrace{\sum_{h=1}^{24}  \lambda_{h}^{b} p^{b,\uparrow}_{h}}_{\textrm{Activation payment}} - \underbrace{\sum_{h=1}^{24}  \lambda_{h}^{b} p^{b,\downarrow}_{h}}_{\textrm{Rebound cost}} - \underbrace{ \sum_{h=1}^{24}  \lambda^{p}s_{h}}_{\textrm{Penalty cost}}
+     % & \underbrace{C(\text{cost})}_{\text{mFRR}} = - \underbrace{\sum_{h=1}^{24} 
+     &  - \underbrace{\sum_{h=1}^{24} \lambda^{s}_{h}P^{\text{Base}}_{h}}_{\textrm{Energy cost}} + \underbrace{\sum_{h=1}^{24}\lambda_{h}^{r} p^{r, \uparrow}_{h}}_{\textrm{Reservation payment}}  \notag \\ & \quad \quad + \underbrace{\sum_{h=1}^{24}  \lambda_{h}^{b} p^{b,\uparrow}_{h}}_{\textrm{Activation payment}} - \underbrace{\sum_{h=1}^{24}  \lambda_{h}^{b} p^{b,\downarrow}_{h}}_{\textrm{Rebound cost}} - \underbrace{ \sum_{h=1}^{24}  \lambda^{p}s_{h}}_{\textrm{Penalty cost}}
 \end{align}
 
 
@@ -130,7 +131,7 @@ For a TCL, there are additional constraints to how energy can be shifted also du
 The savings from load shifting are directly proportional to the volume and price difference between the baseline load and shifted load as given by:
 
 \begin{equation}\label{eq:load_shifting_savings}
-    \text{Load shifting savings} = \sum_{h=1}^{24} \lambda^{s}_{h} p^{\text{Base}}_{h} - \lambda^{s}_{h} p^{\prime}_{h}
+    \sum_{h=1}^{24} \lambda^{s}_{h} p^{\text{Base}}_{h} - \lambda^{s}_{h} p^{\prime}_{h}
 \end{equation}
 
 where $p_{h}$ is the power profile during load shifting, $p^{\text{Base}}_{h}$ is the anticipated baseline power, and $\lambda^{s}_{h}$ is the spot price.
@@ -138,5 +139,6 @@ where $p_{h}$ is the power profile during load shifting, $p^{\text{Base}}_{h}$ i
 However, since the load shifting action only occurs \textit{after} the day-ahead market clearing (cf. Figure \ref{fig:timeline_mfrr}), the BRP has already bought $\lambda^{s}_{h} p^{\text{Base}}_{h}$ and any deviation results in an imbalance for the BRP. In this work, we look at the case where flexible demand acts selfishly and excludes the BRP from its load shifting action. Therefore, the objective function for the flexible demand is simply:
 
 \begin{equation}\label{eq:LoadShiftingObjective}
-    \underbrace{C(\text{cost})}_{\text{load shifting}} = \sum_{h=1}^{24} \lambda_{h}^{s} p_{h}
+    % \underbrace{C(\text{cost})}_{\text{load shifting}} = \sum_{h=1}^{24} \lambda_{h}^{s} p_{h}
+    \sum_{h=1}^{24} \lambda_{h}^{s} p_{h}
 \end{equation}
