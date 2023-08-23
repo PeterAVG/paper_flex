@@ -40,18 +40,34 @@ All strategies are better than the baseline costs, i.e., not utilizing flexibili
     \end{table}
 \end{flushleft}
 
-In Figure \ref{fig:fig_sim}, load shifting and mFRR are compared for the same day. For load shifting, it can clearly be seen how load is shifted to low-price hours, especially at the end of the day. But it also has a very significant effect on the temperature with large deviations from its normal setpoint. For mFRR, the reservation is almost full for all hours during the day. The activation of reservation occurs when the bid price is lower than the balancing price which in this particular scenario only happens for three hours. The effect on the temperature is therefore much smaller than for load shifting. The model is also able to rebound smartly in hour 19 to avoid high rebound costs.
+In Figure \ref{fig:fig_first_case} and \ref{fig:fig_second_case}, load shifting and mFRR are compared for the same day. For load shifting, it can clearly be seen how load is shifted to low-price hours, especially at the end of the day. But it also has a very significant effect on the temperature with large deviations from its normal setpoint. For mFRR, the reservation is almost full for all hours during the day. The activation of reservation occurs when the bid price is lower than the balancing price which in this particular scenario only happens for three hours. The effect on the temperature is therefore much smaller than for load shifting. The model is also able to rebound smartly in hour 19 to avoid high rebound costs.
 
-\begin{figure*}[t]
+% AS ONE FIGURE
+% \begin{figure*}[t]
+%     \centering
+%     \subfloat[]{\includegraphics[width=\columnwidth]{../figures/spot_single_case.png}%
+%         \label{fig_first_case}}
+%     \hfil
+%     \subfloat[]{\includegraphics[width=\columnwidth]{../figures/mFRR_single_case.png}%
+%         \label{fig_second_case}}
+%     \caption{Comparison between load shifting and mFRR in one IS scenario. \textbf{a}: \textbf{Top}: Power profile when load shifting and baseline power of freezer. \textbf{Middle}: Air and food temperature dynamics. \textbf{Bottom}: Spot price in scenario. \textbf{b}: \textbf{Top}: Reservation capacities and baseline power of freezer. \textbf{Upper middle}: Air and food temperature dynamics. \textbf{Lower Middle}: mFRR activations in this scenarios, i.e., when $\lambda_{h}^{bid} \leq \lambda_{h}^{b}$, $\lambda_{h}^{b} > \lambda_{h}^{s}$ and $p^{r,\uparrow}_{h} > 0$. \textbf{Bottom}: Spot price, balancing price, and bid price in scenario.}
+%     \label{fig:fig_sim}
+% \end{figure*}
+
+% AS TWO FIGURES
+\begin{figure}[!t]
     \centering
-    \subfloat[]{\includegraphics[width=\columnwidth]{../figures/spot_single_case.png}%
-        \label{fig_first_case}}
-    \hfil
-    \subfloat[]{\includegraphics[width=\columnwidth]{../figures/mFRR_single_case.png}%
-        \label{fig_second_case}}
-    \caption{Comparison between load shifting and mFRR in one IS scenario. \textbf{a}: \textbf{Top}: Power profile when load shifting and baseline power of freezer. \textbf{Middle}: Air and food temperature dynamics. \textbf{Bottom}: Spot price in scenario. \textbf{b}: \textbf{Top}: Reservation capacities and baseline power of freezer. \textbf{Upper middle}: Air and food temperature dynamics. \textbf{Lower Middle}: mFRR activations in this scenarios, i.e., when $\lambda_{h}^{bid} \leq \lambda_{h}^{b}$, $\lambda_{h}^{b} > \lambda_{h}^{s}$ and $p^{r,\uparrow}_{h} > 0$. \textbf{Bottom}: Spot price, balancing price, and bid price in scenario.}
-    \label{fig:fig_sim}
-\end{figure*}
+    \includegraphics[width=\columnwidth]{../figures/spot_single_case.png}
+    \caption{Example of load shifting in one IS scenario. \textbf{Top}: Power profile when load shifting and baseline power of freezer. \textbf{Middle}: Air and food temperature dynamics. \textbf{Bottom}: Spot price in scenario.}
+    \label{fig:fig_first_case}
+\end{figure}
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=\columnwidth]{../figures/mFRR_single_case.png}
+    \caption{Example of mFRR in one IS scenario. \textbf{Top}: Reservation capacities and baseline power of freezer. \textbf{Upper middle}: Air and food temperature dynamics. \textbf{Lower Middle}: mFRR activations in this scenarios, i.e., when $\lambda_{h}^{bid} \leq \lambda_{h}^{b}$, $\lambda_{h}^{b} > \lambda_{h}^{s}$ and $p^{r,\uparrow}_{h} > 0$. \textbf{Bottom}: Spot price, balancing price, and bid price in scenario.}
+    \label{fig:fig_second_case}
+\end{figure}
 
 The results show some interesting features of mFRR and load shifting. Although the savings are higher for load shifting, they are directly proportional to the energy shifted and therefore the temperature deviation in the freezer. For mFRR, this is not the case due to the mechanism of reservation and activation.
 

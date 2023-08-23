@@ -70,6 +70,7 @@ def plot_spot_case_result() -> None:
 
     # plt.rcParams.update({"font.size": 14})
     _set_font_size(ax, legend=20)
+    plt.tight_layout()
 
     plt.savefig("tex/figures/spot_single_case", dpi=300)
 
@@ -157,83 +158,9 @@ def plot_mFRR_case_result() -> None:
     ax[3].set_xlabel("Time [h]")
     # plt.rcParams.update({"font.size": 20})
     _set_font_size(ax, legend=20)
-
+    plt.tight_layout()
     plt.savefig("tex/figures/mFRR_single_case", dpi=300)
 
-
-def plot_analysis2() -> None:
-    # TODO: delete function
-    ### TABLE: ... ###
-    cache = load_cache()
-    res = []
-    delta = []
-    res2 = []
-    delta2 = []
-
-    for _params, result in cache.items():
-        params = eval(_params)
-        assert len(result) == 2, "We expect two results"
-        instance_information = result[0]
-        opt_result = result[1]
-
-        delta.append(params["delta_max"])
-        delta2.append(params["delta_max"])
-        res.append(opt_result)
-        res2.append(instance_information)
-
-    assert len(res) == len(delta)
-    # assert len(res2) == len(delta2)
-
-    fig, ax = plt.subplots(2, 1, sharex=True, figsize=(11, 8))
-    ax = ax.ravel()
-    ix = np.argsort(delta)
-    x = np.array(delta)[ix]
-    reserve_payment = np.array([e.reserve_payment for e in res])[ix]
-    activation_payment = np.array([e.act_payment for e in res])[ix]
-    penalty_cost = np.array([e.penalty_cost for e in res])[ix]
-    total_cost = np.array([e.total_cost for e in res])[ix]
-    base_cost_today = np.array([e.base_cost_today for e in res])[ix]
-    ax[0].plot(
-        x, base_cost_today, label="Base cost", color="black", linewidth=2, alpha=0.8
-    )
-    ax[0].plot(
-        x,
-        reserve_payment,
-        label="Reserve payment",
-        linestyle="--",
-    )
-    ax[0].plot(
-        x,
-        activation_payment,
-        label="Activation payment",
-        linestyle="--",
-    )
-    ax[0].plot(
-        x,
-        penalty_cost,
-        label="Penalty cost",
-        linestyle="--",
-    )
-    ax[0].plot(
-        x, total_cost, label="Total cost", linewidth=2, color="black", linestyle="--"
-    )
-    ax[0].set_ylabel("Cost [DKK]")
-    # ax[0].set_xlabel(r"$\Delta_{max}$ [$^\circ$C]")
-    ax[0].legend(loc="best")
-
-    x = list(range(24))
-    ax[0].set_xlabel(r"$\Delta_{max}$ [$^\circ$C]")
-    ax[1].set_ylabel("Price [DKK/kWh]")
-
-    data = [r.lambda_b.reshape(-1) for r in res2]
-    # for _delta, r in zip(delta2, res2):
-    # prepare boxplot of lambda_b
-    _ = ax[1].boxplot(data, positions=delta2)
-
-    # _set_font_size(ax, legend=20)
-
-    plt.savefig("tex/figures/analysis2_plots.png", dpi=300)
-    plt.show()
 
 
 def admm_vs_normal_solution() -> None:
@@ -341,6 +268,7 @@ def admm_vs_normal_solution() -> None:
     ax.set_ylabel("Total cost [DKK]")
     ax.legend(loc="best")
     _set_font_size(ax, legend=20)
+    plt.tight_layout()
     plt.savefig("tex/figures/admm_vs_normal_solution.png", dpi=300)
 
 
@@ -459,6 +387,7 @@ def admm_scenarios() -> None:
     ax.set_ylabel("Total cost [DKK]")
     ax.legend(loc="best")
     _set_font_size(ax, legend=20)
+    plt.tight_layout()
     plt.savefig("tex/figures/admm_nb_scenarios_effect.png", dpi=300)
 
 
@@ -579,13 +508,11 @@ def receding_horizon_scenarios() -> None:
 
 
 def main() -> None:
-    if True:
-        # admm_vs_normal_solution()
-        # admm_scenarios()
-        receding_horizon_scenarios()
-    if False:
-        plot_spot_case_result()
-        plot_mFRR_case_result()
+    admm_vs_normal_solution()
+    admm_scenarios()
+    # receding_horizon_scenarios()
+    plot_spot_case_result()
+    plot_mFRR_case_result()
 
 
 if __name__ == "__main__":
