@@ -24,28 +24,51 @@
 \usepackage{pgfplots}
 \usepackage{xcolor}
 \usepgfplotslibrary{fillbetween}
+\usepackage[breaklinks]{hyperref}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{black}{#1}}
 
 \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
 
-\begin{document}
 
 
-\title{Load shifting versus manual frequency reserve: \\ Which one is more appealing to flexible loads?}
+%\title{Load Shifting Versus Manual Frequency Reserve: \\ Which One is More Appealing to Flexible Loads?}
 
-\author{Peter A.V. Gade\textsuperscript{*}\textsuperscript{\textdagger}, Trygve Skjøtskift\textsuperscript{\textdagger}, Charalampos Ziras\textsuperscript{*}, Henrik W. Bindner\textsuperscript{*}, Jalal Kazempour\textsuperscript{*} \\
-    \textsuperscript{*}Department of Wind and Energy Systems, Technical University of Denmark, Kgs. Lyngby, Denmark \\
-    \textsuperscript{\textdagger}IBM Client Innovation Center, Copenhagen, Denmark
+%\author{Peter A.V. Gade\textsuperscript{*}\textsuperscript{\textdagger}, Trygve Skjøtskift\textsuperscript{\textdagger}, Charalampos Ziras\textsuperscript{*}, Henrik W. Bindner\textsuperscript{*}, Jalal Kazempour\textsuperscript{*} \\
+%    \textsuperscript{*}Department of Wind and Energy Systems, Technical University of Denmark, Kgs. Lyngby, Denmark \\
+%    \textsuperscript{\textdagger}IBM Client Innovation Center, Copenhagen, Denmark
     % <-this % stops a space
-    \thanks{Corresponding author. Tel.: +45 24263865. \\ Email addresses: pega@dtu.dk (P.A.V. Gade), Trygve.Skjotskift@ibm.com (T. Skjøtskift), hwbi@dtu.dk (H.W. Bindner), jalal@dtu.dk (J. Kazempour).}% <-this % stops a space
-    \thanks{Manuscript received April 19, 2021; revised August 16, 2021.}}
+%    \thanks{Corresponding author. Tel.: +45 24263865. \\ Email addresses: pega@dtu.dk (P.A.V. Gade), Trygve.Skjotskift@ibm.com (T. Skjøtskift), hwbi@dtu.dk (H.W. Bindner), jalal@dtu.dk (J. Kazempour).}% <-this % stops a space
+%    \thanks{Manuscript received April 19, 2021; revised August 16, 2021.}}
+
+\IEEEaftertitletext{\vspace{-0.5cm}}
+\begin{document}
+\bstctlcite{IEEEexample:BSTcontrol}
+\title{Load Shifting Versus Manual Frequency Reserve: \\ Which One is More Appealing to Flexible Loads?}
+
+\author{
+\IEEEauthorblockN{%
+        Peter A. V. Gade,
+        Trygve Skjøtskift,
+        Charalampos Ziras, 
+        Henrik W. Bindner, and
+        Jalal Kazempour%
+        }
+        \vspace{-0.38cm}
+        %\IEEEauthorblockA{\IEEEauthorrefmark{1} These authors contributed equally to this work.}
+\thanks{P. A. V. Gade, C. Ziras, H. W. Bindner and J. Kazempour are with the Technical University of Denmark , 2800 Kgs. Lyngby, Denmark (e-mail: \{pega, chazi, hwbi, jalal\}@dtu.dk).}
+\thanks{P. A. V. Gade and T. Skjøtskift are with IBM Client Innovation Center, Copenhagen, Denmark (e-mail: Trygve.Skjotskift@ibm.com)}
+\thanks{This work  was supported in part by Innovation Fund Denmark, Grant Agreement No. 0153-00205B.}
+}
+
 
 % \footnote{Corresponding author. Tel.: +45 24263865. \\ Email addresses: pega@dtu.dk (P.A.V. Gade), Trygve.Skjotskift@ibm.com (T. Skjøtskift), hwbi@dtu.dk (H.W. Bindner), jalal@dtu.dk (J. Kazempour).}
 
 % The paper headers
-\markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2021}%
-{Shell \MakeLowercase{\textit{et al.}}: A Sample Article Using IEEEtran.cls for IEEE Journals}
+%\markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2021}%
+%{Shell \MakeLowercase{\textit{et al.}}: A Sample Article Using IEEEtran.cls for IEEE Journals}
 
-\IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
+%\IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
 % Remember, if you use this you must call \IEEEpubidadjcol in the second
 % column for its text to clear the IEEEpubid mark.
 
@@ -58,7 +81,7 @@
 \end{abstract}
 
 \begin{IEEEkeywords}
-    Demand-side flexibility.
+    Demand-side flexibility, thermostatically controlled loads, manual frequency reserves, load shifting. 
 \end{IEEEkeywords}
 
 \input{../sections/introduction}

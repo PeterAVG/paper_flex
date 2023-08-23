@@ -1,10 +1,8 @@
 
-\section{Results and Discussion}\label{sec:results}
-
-In this section, we present and discuss the results related to providing mFRR versus load shifting for a single supermarket freezer using the optimization model in (\ref{P1:compact_model}), and the scenarios and solution strategies described in Section \ref{sec:scenario_generation} and \ref{sec:mFRR_bidding_implementation}. First, we discuss the main result: mFRR versus load shifting. Second, we discuss the effectiveness of the ADMM solution strategy using 2021 price data.
+\section{Numerical Results and Discussion}\label{sec:results}
+In this section, we present and discuss the results related to providing mFRR versus load shifting for a single supermarket freezer using the optimization model in (\ref{P1:compact_model}), and the scenarios and solution strategies described in Sections \ref{sec:scenario_generation} and \ref{sec:mFRR_bidding_implementation}. First, we discuss the main result: mFRR versus load shifting. Second, we discuss the effectiveness of the ADMM solution strategy using 2021 price data.
 
 \subsection{Load shifting vs mFRR}
-
 Figure \ref{fig:cumulative_cost_comparison} shows the cumulative cost of operation for mFRR versus load shifting compared to the baseline cost. For mFRR, the lookback strategy is similar to ADMM strategy using 2021 scenarios. But both of them have a higher cost than load shifting for most of the year. Interestingly, mFRR was very profitable in June (reservation prices increased significantly due to an outage of a reserve power plant).
 
 \begin{figure}[!t]
@@ -44,7 +42,7 @@ All strategies are better than the baseline costs, i.e., not utilizing flexibili
 
 In Figure \ref{fig:fig_sim}, load shifting and mFRR are compared for the same day. For load shifting, it can clearly be seen how load is shifted to low-price hours, especially at the end of the day. But it also has a very significant effect on the temperature with large deviations from its normal setpoint. For mFRR, the reservation is almost full for all hours during the day. The activation of reservation occurs when the bid price is lower than the balancing price which in this particular scenario only happens for three hours. The effect on the temperature is therefore much smaller than for load shifting. The model is also able to rebound smartly in hour 19 to avoid high rebound costs.
 
-\begin{figure*}[!t]
+\begin{figure*}[t]
     \centering
     \subfloat[]{\includegraphics[width=\columnwidth]{../figures/spot_single_case.png}%
         \label{fig_first_case}}
