@@ -10,6 +10,16 @@
 \usepackage{verbatim}
 \usepackage{graphicx}
 \usepackage{cite}
+\usepackage{alphalph}
+\usepackage{etoolbox}
+
+\newcommand{\alphalphval}[1]{\alphalph{\value{#1}}}
+
+\AtBeginDocument{%
+  \AtBeginEnvironment{subequations}{%
+    \let\alph\alphalphval%
+  }
+}
 
 % added packages from authors
 \usepackage{xcolor}

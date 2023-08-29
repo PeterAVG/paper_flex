@@ -95,7 +95,10 @@ def plot_mFRR_case_result() -> None:
     ax[0].step(x, information.p_base, color="black", where="post")
     ax[0].step(x, y, color="black", linestyle="--", where="post")
     ax[0].set_ylabel("Power [kW]")
-    ax[0].legend([r"$P^{B}_{h}$", r"$P^{B}_{h} - p^{r,\uparrow}_{h}$"], loc="best")
+    ax[0].legend(
+        [r"$P^{Base}_{h}$", r"$P^{Base}_{h} - p^{r,\uparrow}_{h}$"],
+        loc="best",
+    )
 
     # Temperature dynamics
     w = -1
@@ -117,11 +120,17 @@ def plot_mFRR_case_result() -> None:
     # power dynamics
     _pt = information.pt[w, :]
 
-    ax[2].step(x, information.p_base, label=r"$P^{B}_{h}$", color="black", where="post")
+    ax[2].step(
+        x,
+        information.p_base,
+        label=r"$P^{Base}_{h}$",
+        color="black",
+        where="post",
+    )
     ax[2].step(
         x,
         _pt,
-        label=r"$P^{B}_{h} - p^{b,\uparrow}_{h} + p^{b,\downarrow}_{h}$",
+        label=r"$P^{Base}_{h} - p^{b,\uparrow}_{h} + p^{b,\downarrow}_{h}$",
         color="black",
         linestyle="--",
         where="post",
@@ -160,7 +169,6 @@ def plot_mFRR_case_result() -> None:
     _set_font_size(ax, legend=20)
     plt.tight_layout()
     plt.savefig("tex/figures/mFRR_single_case", dpi=300)
-
 
 
 def admm_vs_normal_solution() -> None:
@@ -510,7 +518,7 @@ def receding_horizon_scenarios() -> None:
 def main() -> None:
     admm_vs_normal_solution()
     admm_scenarios()
-    # receding_horizon_scenarios()
+    receding_horizon_scenarios()
     plot_spot_case_result()
     plot_mFRR_case_result()
 

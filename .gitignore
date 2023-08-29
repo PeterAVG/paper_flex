@@ -142,6 +142,7 @@ tex/ieee/*.fdb_latexmk
 tex/ieee/*.pdf
 tex/ieee/*.synctex.gz
 tex/ieee/*.fls
+tex/ieee/*.out
 tex/figures/*.aux
 tex/figures/*.bbl
 tex/figures/*.blg
@@ -149,6 +150,7 @@ tex/figures/*.fdb_latexmk
 tex/figures/*.pdf
 tex/figures/*.synctex.gz
 tex/figures/*.fls
+tex/figures/*.out
 
 # old cache
 src/experiments/cache/cache_old.pkl

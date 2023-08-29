@@ -15,7 +15,7 @@ the regulating power bid $\lambda_{h,\omega}^{\text{bid}}$ and the set $\Gamma_{
 \begin{figure}[b]
     \centering
     \includestandalone[width=\columnwidth]{../figures/timeline_mfrr_variables_tikz}
-    \caption{Variables related to the mFRR  decisions. The asterisk indicates the first-stage variable.  The variable $\bm{\lambda}_{\omega}^{\text{bid}}$ as well as the set $\Gamma_{\omega} = \{ \bm{p}^{\rm{r},\uparrow}$, $\bm{p}_{\omega}^{\rm{b},\uparrow}$, $\bm{p}_{\omega}^{\rm{b},\downarrow}$, $\bm{s}_{\omega}$, $\bm{T}_{\omega}^{\rm{c}}$, $\bm{T}_{\omega}^{\rm{f}}$, $\bm{T}_{\omega}^{\rm{c,B}}$, $\bm{T}_{\omega}^{\rm{f,B}}$, $\bm{\phi}_{\omega}$, $\bm{g}_{\omega} \}$ are the second-stage  variables.}
+    \caption{Variables related to the mFRR  decisions. The asterisk indicates the first-stage variable.  The variable $\bm{\lambda}_{\omega}^{\text{bid}}$ as well as the set $\Gamma_{\omega} = \{ $ $\bm{p}_{\omega}^{\rm{b},\uparrow}$, $\bm{p}_{\omega}^{\rm{b},\downarrow}$, $\bm{s}_{\omega}$, $\bm{T}_{\omega}^{\rm{c}}$, $\bm{T}_{\omega}^{\rm{f}}$, $\bm{T}_{\omega}^{\rm{c,B}}$, $\bm{T}_{\omega}^{\rm{f,B}}$, $\bm{\phi}_{\omega}$, $\bm{g}_{\omega}, \bm{u}_{\omega}, \bm{z}_{\omega}, \bm{y}_{\omega} \}$ are the second-stage  variables.}
     \label{fig:timeline_mfrr_variables}
 \end{figure}
 
@@ -31,14 +31,14 @@ Aligned with \eqref{eq:mFRRObjective} but in a two-stage stochastic setting, the
 %
 \begin{subequations}\label{P1:compact_model}
     \begin{align}
-        \underset{\bm{p}^{\rm{r},\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \bm{\Gamma}_{\omega}}{\textrm{max}} \quad & f(\bm{p}^{\rm{r},\uparrow}) + \sum_{\omega \in \Omega} \pi_{\omega} g(\bm{\Gamma}_{\omega}) \label{P1:eq1}
+        \underset{\bm{p}^{\rm{r},\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \Gamma_{\omega}}{\textrm{max}} \quad & f(\bm{p}^{\rm{r},\uparrow}) + \sum_{\omega \in \Omega} \pi_{\omega} g(\Gamma_{\omega}) \label{P1:eq1}
         \\
-        \text{s.t.} \quad                                                                                                 & h(\bm{p}^{\rm{r},\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \bm{\Gamma}_{\omega}) \leq 0, \quad \forall{\omega}\label{P1:eq2}                                                                                        \\
-        \quad                                                                                                             & \text{State-space model } (\ref{eq:2ndFreezerStateSpace}), \quad \forall{\omega} \label{P1:eq3}
+        \text{s.t.} \quad                                                                                            & h(\bm{p}^{\rm{r},\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \Gamma_{\omega}) \leq 0, \quad \forall{\omega}\label{P1:eq2}                                                                                             \\
+        \quad                                                                                                        & \text{State-space model } (\ref{eq:2ndFreezerStateSpace}), \quad \forall{\omega} \label{P1:eq3}
         \\
-        \quad                                                                                                             & \Bigl( \bm{p}^{\rm{r},\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \bm{p}_{\omega}^{\rm{b},\uparrow}, \bm{p}_{\omega}^{\rm{b},\downarrow}, \bm{s}_{\omega}, \bm{T}_{\omega}^{\rm{c}}, \bm{T}_{\omega}^{\rm{f}}, \notag \\ \quad & \quad \bm{T}_{\omega}^{\rm{c,B}}, \bm{T}_{\omega}^{\rm{f,B}}, \bm{\phi}_{\omega}, \bm{g}_{\omega} \Bigr) \in \mathbb{R}^{n}  \label{P1:eq4}
+        \quad                                                                                                        & \Bigl( \bm{p}^{\rm{r},\uparrow}, \bm{\lambda}_{\omega}^{\text{bid}}, \bm{p}_{\omega}^{\rm{b},\uparrow}, \bm{p}_{\omega}^{\rm{b},\downarrow}, \bm{s}_{\omega}, \bm{T}_{\omega}^{\rm{c}}, \bm{T}_{\omega}^{\rm{f}}, \notag \\ \quad & \quad \bm{T}_{\omega}^{\rm{c,B}}, \bm{T}_{\omega}^{\rm{f,B}}, \bm{\phi}_{\omega}, \bm{g}_{\omega} \Bigr) \in \mathbb{R}^{n}  \label{P1:eq4}
         \\
-        \quad                                                                                                             & \bm{u}_{\omega}, \bm{z}_{\omega}, \bm{y}_{\omega} \in \{0,1\},  \label{P1:eq5}
+        \quad                                                                                                        & \bm{u}_{\omega}, \bm{z}_{\omega}, \bm{y}_{\omega} \in \{0,1\},  \label{P1:eq5}
     \end{align}
 \end{subequations}
 %
@@ -49,7 +49,7 @@ For optimal decision making for load shifting, \eqref{P1:compact_model} is simpl
 
 \vspace{-1mm}
 \subsection{Regulating power bidding implementation}\label{sec:mFRR_bidding_implementation}
-Recall from  Fig. \ref{fig:timeline_mfrr_variables} that we have merged two stages making regulating power bidding decisions $\bm{\lambda}_{\omega}^{\text{bid}}$ and real-time operational decisions $\Gamma_{\omega}$ in one. This is the reason both set of variables $\bm{\lambda}_{\omega}^{\text{bid}}$ and $\Gamma_{\omega}$ are similarly indexed by $\omega$, while in reality, the decision $\bm{\lambda}_{\omega}^{\text{bid}}$ should be made before $\Gamma_{\omega}$. This also challenges the ex-post OOS simulation. To resolve it, we use a learning policy, such that we replace scenario-indexed variable $\lambda_{h,\omega}^{\text{bid}}$ in \eqref{P1:compact_model} by $\alpha f(\lambda_{h,\omega}^{\rm{s}}) + \beta$, where $f(\lambda_{h,\omega}^{\rm{s}})$ is an arbitrarily selected function of $\lambda_{h,\omega}^{\rm{s}}$, whereas $\alpha$ and $\beta$ are first-stage non-negative variables --- they are not indexed by $\omega$. This replacement shrinks the degree of freedom for the BRP compared to \eqref{P1:compact_model}, but makes it more practical to be used. The reason is that, by this trick, the regulating power bidding decision to be made at 5pm of day $\rm{D}$-1 becomes a first-stage decision, dependent not only on policies $\alpha$ and $\beta$, but also on uncertain spot prices $\lambda_{h,\omega}^{\rm{s}}$. In other words, by using the in-sample scenarios $\omega$, the BRP obtains optimal values for $\alpha$ and $\beta$ at 9:30am of day $\rm{D}$-1. Then, she waits to see the spot prices at noon of day $\rm{D}$-1, and  submits her regulating power bids at 5pm of day $\rm{D}$-1. In our simulations, we found out that the selection of $f(\lambda_{h,\omega}^{\rm{s}})$ as the difference of spot prices in subsequent hours works comparatively more satisfactory ex-post, as it suits better to accommodate the rebound effect. By this, the BRP prefers to be activated when the spot price during rebound (down-regulation) is comparatively lower. Therefore, we replace $\lambda_{h,\omega}^{\text{bid}}$ in \eqref{P1:compact_model} by 
+Recall from  Fig. \ref{fig:timeline_mfrr_variables} that we have merged two stages making regulating power bidding decisions $\bm{\lambda}_{\omega}^{\text{bid}}$ and real-time operational decisions $\Gamma_{\omega}$ in one. This is the reason both set of variables $\bm{\lambda}_{\omega}^{\text{bid}}$ and $\Gamma_{\omega}$ are similarly indexed by $\omega$, while in reality, the decision $\bm{\lambda}_{\omega}^{\text{bid}}$ should be made before $\Gamma_{\omega}$. This also challenges the ex-post OOS simulation. To resolve it, we use a learning policy, such that we replace scenario-indexed variable $\lambda_{h,\omega}^{\text{bid}}$ in \eqref{P1:compact_model} by $\alpha f(\lambda_{h,\omega}^{\rm{s}}) + \beta$, where $f(\lambda_{h,\omega}^{\rm{s}})$ is an arbitrarily selected function of $\lambda_{h,\omega}^{\rm{s}}$, whereas $\alpha$ and $\beta$ are first-stage non-negative variables --- they are not indexed by $\omega$. This replacement shrinks the degree of freedom for the BRP compared to \eqref{P1:compact_model}, but makes it more practical to be used. The reason is that, by this trick, the regulating power bidding decision to be made at 5pm of day $\rm{D}$-1 becomes a first-stage decision, dependent not only on policies $\alpha$ and $\beta$, but also on uncertain spot prices $\lambda_{h,\omega}^{\rm{s}}$. In other words, by using the in-sample scenarios $\omega$, the BRP obtains optimal values for $\alpha$ and $\beta$ at 9:30am of day $\rm{D}$-1. Then, she waits to see the spot prices at noon of day $\rm{D}$-1, and  submits her regulating power bids at 5pm of day $\rm{D}$-1. In our simulations, we found out that the selection of $f(\lambda_{h,\omega}^{\rm{s}})$ as the difference of spot prices in subsequent hours works comparatively more satisfactory ex-post, as it suits better to accommodate the rebound effect. By this, the BRP prefers to be activated when the spot price during rebound (down-regulation) is comparatively lower. Therefore, we replace $\lambda_{h,\omega}^{\text{bid}}$ in \eqref{P1:compact_model} by
 %
 \begin{align}\label{eq:affine_policy}
      & \alpha ( \lambda_{h+1,\omega}^{\rm{s}} - \lambda_{h,\omega}^{\rm{s}}) + \lambda_{h,\omega}^{\rm{s}} + \beta, \quad \forall{\omega}, \forall{h} \in \{1, \ldots, 23\}.
@@ -83,14 +83,14 @@ where $\mathbbm{1}^{(.)}$ is 1 if conditions (.) are met, otherwise it is zero. 
 %
 \begin{subequations}\label{eq:bid_constraint_relaxed}
     \begin{align}
-        \lambda_{h,\omega}^{\rm{b}} - \lambda_{h}^{\rm{s}} \geq \lambda_{h,\omega}^{\rm{bid}} - M  (1 - g_{h,\omega}) , \quad                        & \forall{h,\omega}             \label{con_bid:subeq1}  \\
-        \lambda_{h,\omega}^{\rm{bid}} \geq \lambda_{h,\omega}^{\rm{b}} - \lambda_{h}^{\rm{s}} - M  (1 - g_{h,\omega}) , \quad                        & \forall{h,\omega}             \label{con_bid:subeq2}  \\
+        \lambda_{h,\omega}^{\rm{b}} - \lambda_{h}^{\rm{s}} \geq \lambda_{h,\omega}^{\rm{bid}} - M  (1 - g_{h,\omega}) , \quad                               & \forall{h,\omega}             \label{con_bid:subeq1}  \\
+        \lambda_{h,\omega}^{\rm{bid}} \geq \lambda_{h,\omega}^{\rm{b}} - \lambda_{h}^{\rm{s}} - M  (1 - g_{h,\omega}) , \quad                               & \forall{h,\omega}             \label{con_bid:subeq2}  \\
         p^{\rm{b}, \uparrow}_{h,\omega} \leq \phi_{h,\omega}  \mathbbm{1}^{\lambda^{\rm{b}}_{h,\omega} > \lambda^{\rm{s}}_{h,\omega}}, \quad                & \forall{{h,\omega}}           \label{con_bid:subeq3}  \\
         p^{\rm{b}, \uparrow}_{h,\omega} + s_{h,\omega} \geq \phi_{h,\omega}  \mathbbm{1}^{\lambda^{\rm{b}}_{h,\omega} > \lambda^{\rm{s}}_{h,\omega}}, \quad & \forall{{h,\omega}}           \label{con_bid:subeq4}  \\
-        -g_{h,\omega}  M \leq \phi_{h,\omega}, \quad                                                                                                 & \forall{h,\omega}             \label{con_bid:subeq5}  \\
-        \phi_{h,\omega} \leq g_{h,\omega}  M, \quad                                                                                                  & \forall{h,\omega}             \label{con_bid:subeq6}  \\
-        -(1 - g_{h,\omega})  M \leq \phi_{h,\omega} - p^{\rm{r},\uparrow}_{h}, \quad                                                                 & \forall{h,\omega}             \label{con_bid:subeq7}  \\
-        \phi_{h,\omega} - p^{\rm{r},\uparrow}_{h} \leq (1 - g_{h,\omega})  M, \quad                                                                  & \forall{h,\omega},             \label{con_bid:subeq8}
+        -g_{h,\omega}  M \leq \phi_{h,\omega}, \quad                                                                                                        & \forall{h,\omega}             \label{con_bid:subeq5}  \\
+        \phi_{h,\omega} \leq g_{h,\omega}  M, \quad                                                                                                         & \forall{h,\omega}             \label{con_bid:subeq6}  \\
+        -(1 - g_{h,\omega})  M \leq \phi_{h,\omega} - p^{\rm{r},\uparrow}_{h}, \quad                                                                        & \forall{h,\omega}             \label{con_bid:subeq7}  \\
+        \phi_{h,\omega} - p^{\rm{r},\uparrow}_{h} \leq (1 - g_{h,\omega})  M, \quad                                                                         & \forall{h,\omega},             \label{con_bid:subeq8}
         % \lambda_{h,\omega}^{\rm{bid}} \leq \lambda^{Max} \label{con_bid:subeq9}
     \end{align}
 \end{subequations}
@@ -99,11 +99,11 @@ Constraints \eqref{con_bid:subeq1}-\eqref{con_bid:subeq2} ensure that $g_{h,\ome
 
 \vspace{-1mm}
 \subsection{Scenario decomposition with ADMM}
-By increasing the number of scenarios,  the proposed stochastic program  quickly becomes computationally intractable due to the number of binary variables and intertemporal constraints. To resolve it, we apply a scenario decomposition approach built upon the ADMM algorithm \cite{boyd2011distributed}. To do so, we relax non-anticipativity constraints by adding a scenario index to the first-stage variables, i.e., 
+By increasing the number of scenarios,  the proposed stochastic program  quickly becomes computationally intractable due to the number of binary variables and intertemporal constraints. To resolve it, we apply a scenario decomposition approach built upon the ADMM algorithm \cite{boyd2011distributed}. To do so, we relax non-anticipativity constraints by adding a scenario index to the first-stage variables, i.e.,
 %
 \begin{equation}\label{eq:non_anticipativity}
     \bm{p}^{\rm{r},\uparrow} \rightarrow \bm{p}^{\rm{r},\uparrow}_{\omega}, \quad \alpha \rightarrow \alpha_{\omega}, \quad \beta \rightarrow \beta_{\omega}.
 \end{equation}
 
-This decomposes the original problem to a set of deterministic sub-problems, one per scenario, to be solved in parallel.  
+This decomposes the original problem to a set of deterministic sub-problems, one per scenario, to be solved in parallel.
 The ADMM algorithm is iterative. The convergence happens when we achieve a consensus over sub-problems on first- and second-stage  variables. Note that this solution strategy is a heuristic for MILP problems \cite{hong2016convergence}.
