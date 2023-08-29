@@ -1,11 +1,11 @@
 {\appendices
 
-\section*{Appendix A}\label{appendix:A}
+\section*{Appendix: Final model formulation}\label{appendix:A}
 % \addcontentsline{toc}{section}{Appendices}
 % \renewcommand{\thesubsection}{\Alph{subsection}}
 % \subsection{Appendix}\label{appendix:A}
 
-\subsection{Final model formulation}\label{sec:final_model}
+%\subsection{Final model formulation}\label{sec:final_model}
 
 % Describe objective function for mFRR and load shifting.
 
@@ -14,6 +14,10 @@
 % \begin{align}\label{set:OptVariables}
 %     \Psi = \{p_{h,\omega}, p^{r, \uparrow}_{h}, & s_{h,\omega}, p^{b, \uparrow}_{h,\omega}, p^{b, \downarrow}_{h,\omega}, u^{\uparrow}_{h,\omega}, y^{\uparrow}_{h,\omega}, z^{\uparrow}_{h,\omega}, u^{\downarrow}_{h,\omega}, y^{\downarrow}_{h,\omega}, z^{\downarrow}_{h,\omega}, \notag \\ & T^{f}_{\omega, t}, T^{c}_{\omega, t}, T^{f,B}_{t}, T^{c, B}_{t}, \lambda_{h}^{bid}, \phi_{h,\omega}, g_{h,\omega}, \Delta \}
 % \end{align}
+
+
+\begingroup
+\allowdisplaybreaks
 
 The final optimization model is a two-stage stochastic MILP and is described in full detail in the following. First, all auxillary variables and constraints are presented. Second, constraints related to the power consumption for the freezer is shown. Third, the physical constraints for the temperatures are presented. Lastly, the rebound constraints are presented.
 
@@ -121,6 +125,8 @@ Lastly, the following constraint ensures that up-regulation happens before down-
 
 This makes sense since it is not possible (or at least difficult) to anticipate potential up-regulation events in the power grid. As such, it does not make sense to pre-cool (or pre-heat) a TCL in the context of mFRR.
 
+
+\endgroup
 
 % \section*{Appendix A}\label{appendix:A}
 % % \addcontentsline{toc}{section}{Appendices}

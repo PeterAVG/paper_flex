@@ -19,7 +19,7 @@ In Fig. \ref{fig:chunk}, the top plot shows the 15-minute average air temperatur
 
 Temperature fluctuates around its setpoint at -18 $^{\circ}$C with the exception of hour 7-8, where defrosting is scheduled.
 While defrosting, a heating element is briefly turned on, and the expansion valve is closed, such that the flow of refrigerant stops. Afterwards, while recovering the temperature, the expansion valve is fully opened.
-The electric power of the variable-speed compressor rack, scaled to one freezer is shown in the bottom plot\footnote{Since temperature dynamics are similar for all freezers, homogeneity is assumed. Hence, an equal consumption level is assumed for all freezers.}.
+The electric power of the variable-speed compressor rack, scaled to one freezer is shown in the bottom plot. Since temperature dynamics are similar for all freezers, homogeneity is assumed. Hence, an equal consumption level is assumed for all freezers.
 
 Consumption is highest during opening hours, and it is lowest during closing hours.
 During opening hours, food is being replaced and customers open the display case constantly.
@@ -31,7 +31,7 @@ For these reasons, there are effectively two regimes for a supermarket freezer p
     \includegraphics[width=\columnwidth]{../figures/tmp_od_Pt.png}
     \caption{\textbf{Top}: temperature of a single freezer in a supermarket. \textbf{Middle}: opening degree (OD) of the freezer expansion valve. \textbf{Bottom}: electric power of the compressor rack feeding a single freezer.}
     \label{fig:chunk}
-    \vspace{-1mm}
+    \vspace{-2mm}
 \end{figure}
 
 \subsubsection{Thermal modeling of freezer}
@@ -45,7 +45,7 @@ In \cite{hao2014aggregate}, it is described how a simple TCL model can be develo
     \end{align}
 \end{subequations}
 %
-where $T^{\rm{c}}_t$ is the measured air temperature in the freezer at time $t$, and $T^{\rm{f}}_t$ is the food temperature which is a latent unobserved state. There is essentially a low-pass filter of the air temperature in the freezer with time constant $\tau = C^{\rm{f}} R^{\rm{cf}}$, where $C^{\rm{f}}$ and $C^{\rm{c}}$ are the thermal capacitance of the food and air in the freezer, respectively. Parameters $R^{\rm{cf}}$ and $R^{\rm{ci}}$ are the thermal resistance between food and air in the freezer, and air and indoor temperature, respectively. Furthermore, $\epsilon$ represents the temperature change when defrosting and $\mathbbm{1}^{\text{df}}_{t}$ is the indicator function for when defrosting happens. $R^{\rm{ci}}$ is either one of two values, $R^{\rm{ci}, \text{day}}$ and $R^{\rm{ci}, \text{night}}$, to capture the differences between opening hours (6am to 10pm) and closing hours (10pm to 6am). The opening degree $OD_t$, indoor air temperature $T^{\rm{i}}_t$, and power $P_t$ are exogenous inputs as the opening degree is assumed to be fixed during a demand-response event, while only $P_t$ is controllable, and the indoor air temperature is unaffected by the freezers. Parameter $\eta$ is the compressor efficiency. The model is discretized with a time step of 15 minutes, i.e., $dt = 0.25$ hours. \red{Please define $T^{\rm{i}}_t$.}
+where $T^{\rm{c}}_t$ is the measured air temperature in the freezer at time $t$, and $T^{\rm{f}}_t$ is the food temperature which is a latent unobserved state. There is essentially a low-pass filter of the air temperature in the freezer with time constant $\tau = C^{\rm{f}} R^{\rm{cf}}$, where $C^{\rm{f}}$ and $C^{\rm{c}}$ are the thermal capacitance of the food and air in the freezer, respectively. Parameters $R^{\rm{cf}}$ and $R^{\rm{ci}}$ are the thermal resistance between food and air in the freezer, and air and indoor temperature, respectively. Furthermore, $\epsilon$ represents the temperature change when defrosting and $\mathbbm{1}^{\text{df}}_{t}$ is the indicator function for when defrosting happens. $R^{\rm{ci}}$ is either one of two values, $R^{\rm{ci}, \text{day}}$ and $R^{\rm{ci}, \text{night}}$, to capture the differences between opening hours (6am to 10pm) and closing hours (10pm to 6am). The opening degree $OD_t$, indoor air temperature $T^{\rm{i}}_t$, and power $P_t$ are exogenous inputs as the opening degree is assumed to be fixed during a demand-response event, while only $P_t$ is controllable, and the indoor air temperature is unaffected by the freezers. Parameter $\eta$ is the compressor efficiency. The model is discretized with a time step of 15 minutes, i.e., $dt = 0.25$ hours. 
 
 \subsubsection{Model validation}
 
@@ -74,7 +74,7 @@ Using the R library of CTSM-R \cite{juhl2016ctsmr}, all parameters in (\ref{eq:2
     \caption{Parameter Estimates of (\ref{eq:2ndFreezerStateSpace}).}
     \label{tab:parameter_estimates}
     \centering
-    \begin{tabular}[b]{|l|l|l|l|l|l|}
+    \begin{tabular}[b]{|l|l|l||l|l|l|}
         \hline
         Parameter                 & Value & Unit            & Parameter                   & Value & Unit           \\ \hhline{|=|=|=|=|=|=|}
         $C^{\rm{f}}$              & 6.552 & kWh/$^{\circ}$C & $R^{\rm{ci}, \text{night}}$ & 61.25 & $^{\circ}$C/kW \\
@@ -82,6 +82,7 @@ Using the R library of CTSM-R \cite{juhl2016ctsmr}, all parameters in (\ref{eq:2
         $R^{\rm{cf}}$             & 5.010 & $^{\circ}$C/kW  & $\epsilon$                  & 3.372 & $^{\circ}$C/h  \\
         $R^{\rm{ci}, \text{day}}$ & 41.05 & $^{\circ}$C/kW  &                             &       &                \\ \hline
     \end{tabular}
+    \vspace{-2mm}
 \end{table}
 
 % WIDE FORMAT
@@ -108,6 +109,7 @@ Since there are only 96 time steps, the defrosting period can result in relative
     \includegraphics[width=\columnwidth]{../figures/2ndFreezerModelValidation.png}
     \caption{ Validation of the state-space model in (\ref{eq:2ndFreezerStateSpace}). \textbf{Left}: auto-correlation function (acf) of the  residuals. \textbf{Right}: cumulated periodogram of the residuals.}
     \label{fig:2ndFreezerModelValidation}
+    \vspace{-1mm}
 \end{figure}
 
 
