@@ -158,7 +158,7 @@ def plot_mFRR_case_result() -> None:
     ax[3].step(
         x,
         information.lambda_spot[w, :] + information.lambda_b[w, :],
-        label=r"$\lambda_{h}^{bid}$",
+        label=r"$\lambda_{h}^{bid} + \lambda_{h}^{s}$",
         color="orange",
         where="post",
     )
